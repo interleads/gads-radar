@@ -46,7 +46,15 @@ const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche,
       <Card className="overflow-hidden bg-gradient-to-br from-[#1a1040] to-[#120a2e] border-none text-white shadow-2xl">
         <CardHeader className="p-0">
           <div className="flex items-center gap-6 p-6 bg-gradient-to-r from-[#1e1148] to-[#2a0e4a]">
-            <div className={`w-24 h-24 rounded-full flex items-center justify-center text-4xl font-bold grade-${regionGrade.grade.toLowerCase()} shadow-lg transition-transform hover:scale-105`}>
+            <div className={`
+              w-24 h-24 rounded-full flex items-center justify-center 
+              text-4xl font-bold 
+              ${
+                regionGrade.grade === 'A' 
+                  ? 'bg-brand-green-400 text-white border-4 border-brand-green-500' 
+                  : `grade-${regionGrade.grade.toLowerCase()}`
+              } 
+              shadow-lg transition-transform hover:scale-105`}>
               {regionGrade.grade}
             </div>
             <div className="flex-1">
