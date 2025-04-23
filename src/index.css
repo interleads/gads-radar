@@ -99,16 +99,16 @@
 
 @layer components {
   .grade-a {
-    @apply bg-gradient-to-br from-brand-green-400 to-brand-green-600 text-white;
+    @apply bg-gradient-to-br from-emerald-400 to-emerald-600 text-white;
   }
   .grade-b {
-    @apply bg-gradient-to-br from-brand-green-500 to-brand-green-700 text-white;
+    @apply bg-gradient-to-br from-blue-400 to-blue-600 text-white;
   }
   .grade-c {
-    @apply bg-gradient-to-br from-brand-yellow-400 to-brand-yellow-600 text-white;
+    @apply bg-gradient-to-br from-yellow-400 to-yellow-600 text-white;
   }
   .grade-d {
-    @apply bg-gradient-to-br from-brand-red-400 to-brand-red-600 text-white;
+    @apply bg-gradient-to-br from-red-400 to-red-600 text-white;
   }
   
   .animate-fade-in {
