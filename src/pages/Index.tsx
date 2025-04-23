@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
@@ -6,41 +5,35 @@ import SearchForm from '@/components/SearchForm';
 import ResultsCard, { KeywordData } from '@/components/ResultsCard';
 import ServicePlans from '@/components/ServicePlans';
 import SkeletonLoader from '@/components/SkeletonLoader';
+import LeadCaptureDialog from '@/components/LeadCaptureDialog';
 import { fetchKeywordData } from '@/services/api';
 
 const Index: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchPerformed, setSearchPerformed] = useState(false);
-  const [results, setResults] = useState<{
+  const [showLeadCapture, setShowLeadCapture] = useState(false);
+  const [pendingResults, setPendingResults] = useState<{
     keywordsData: KeywordData[];
     regionGrade: 'A' | 'B' | 'C' | 'D';
     location: string;
     niche: string;
     regionName: string;
   } | null>(null);
+  const [results, setResults] = useState<typeof pendingResults>(null);
 
   const handleSearch = async (niche: string, cep: string) => {
     setIsLoading(true);
     
     try {
-      // Em um ambiente real, esta chamada seria para a API real do Google Ads
       const data = await fetchKeywordData(niche, cep);
-      
-      setResults({
+      setPendingResults({
         keywordsData: data.keywords,
         regionGrade: data.regionGrade,
         location: cep,
         niche: niche,
         regionName: data.regionName
       });
-      
-      setSearchPerformed(true);
-      toast.success(`Análise concluída para ${niche} no CEP ${cep}`);
-      
-      // Rolagem suave até os resultados
-      setTimeout(() => {
-        document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      setShowLeadCapture(true);
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
       toast.error('Ocorreu um erro ao consultar os dados. Por favor, tente novamente.');
@@ -49,7 +42,22 @@ const Index: React.FC = () => {
     }
   };
 
-  // Mensagens personalizadas baseadas na nota
+  const handleLeadCapture = (data: { name: string; email: string; phone: string }) => {
+    console.log('Lead captured:', data);
+    
+    toast.success('Dados salvos com sucesso!');
+    setShowLeadCapture(false);
+    
+    if (pendingResults) {
+      setResults(pendingResults);
+      setSearchPerformed(true);
+      
+      setTimeout(() => {
+        document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  };
+
   const getRegionMessage = (grade: 'A' | 'B' | 'C' | 'D', regionName: string, niche: string) => {
     switch (grade) {
       case 'A':
@@ -71,6 +79,12 @@ const Index: React.FC = () => {
       
       <main className="flex-grow">
         <SearchForm onSearch={handleSearch} isLoading={isLoading} />
+        
+        <LeadCaptureDialog
+          isOpen={showLeadCapture}
+          onClose={() => setShowLeadCapture(false)}
+          onSubmit={handleLeadCapture}
+        />
         
         {searchPerformed && (
           <section id="results" className="py-16">
