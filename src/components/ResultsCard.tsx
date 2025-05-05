@@ -6,7 +6,7 @@ import {
   CardHeader
 } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { Rocket, ChartBar } from 'lucide-react';
+import { Rocket } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export interface KeywordData {
@@ -47,28 +47,32 @@ const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche,
   
   return (
     <div className="animate-fade-in">
-      <Card className="overflow-hidden bg-white border border-gray-200 shadow-md text-gray-800">
+      <Card className="overflow-hidden bg-white border border-gray-200 shadow-md">
         <CardHeader className="p-0">
           <div className="flex flex-col md:flex-row">
             {/* Grade indicator */}
             <div className="md:w-1/4 p-6 flex items-center justify-center bg-gray-50">
               <div className={`
                 w-24 h-24 rounded-full flex items-center justify-center 
-                text-4xl font-bold text-white
+                text-[5rem] font-bold text-white
                 ${gradeBackgroundColor[regionGrade.grade]} 
-                shadow-lg transition-transform hover:scale-105`}>
+                shadow-lg`}>
                 {regionGrade.grade}
               </div>
             </div>
             
-            {/* Header with message */}
-            <div className="md:w-3/4 p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-              <h3 className="text-2xl font-bold mb-3">Análise de Concorrência</h3>
-              <div className="mt-2 bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+            {/* Search volume and message */}
+            <div className="md:w-3/4 flex flex-col">
+              <div className="bg-white p-6">
+                <h2 className="text-4xl font-bold text-gray-800">
+                  {totalSearchVolume.toLocaleString()} buscas
+                </h2>
+              </div>
+              <div className="bg-teal-500 p-4 text-white">
                 <div className="flex items-center gap-2">
                   <Rocket className="w-5 h-5" />
-                  <p className="font-medium">
-                    {regionGrade.message}
+                  <p className="font-medium text-lg">
+                    Alto potencial de lucratividade em anúncios no Google
                   </p>
                 </div>
               </div>
@@ -77,40 +81,33 @@ const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche,
         </CardHeader>
         
         <CardContent className="p-6">
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <ChartBar className="w-5 h-5 text-blue-500" />
-              <h3 className="font-semibold text-xl text-gray-800">
-                Total de buscas estimadas: <span className="text-blue-600 font-bold">{totalSearchVolume.toLocaleString()}</span>
-              </h3>
-            </div>
-            
-            <div className="overflow-x-auto rounded-xl border border-gray-200">
-              <Table>
-                <TableHeader className="bg-gray-50">
-                  <TableRow className="border-gray-200">
-                    <TableHead className="text-gray-700 font-semibold">Palavra-chave</TableHead>
-                    <TableHead className="text-right text-gray-700 font-semibold">Volume</TableHead>
-                    <TableHead className="text-right text-gray-700 font-semibold">CPC médio (R$)</TableHead>
-                    <TableHead className="text-right text-gray-700 font-semibold">Concorrência</TableHead>
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Palavras-chave principais</h3>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-100">
+                  <TableHead className="text-gray-700 font-medium">Palavra-chave</TableHead>
+                  <TableHead className="text-right text-gray-700 font-medium">Volume de busca</TableHead>
+                  <TableHead className="text-right text-gray-700 font-medium">CPC médio (R$)</TableHead>
+                  <TableHead className="text-right text-gray-700 font-medium">Concorrência</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {keywordsData.map((keyword, index) => (
+                  <TableRow key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <TableCell className="font-medium text-gray-700">{keyword.keyword}</TableCell>
+                    <TableCell className="text-right text-gray-700">{keyword.searchVolume.toLocaleString()}</TableCell>
+                    <TableCell className="text-right text-gray-700">{keyword.cpc.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge className={`px-3 py-1 ${competitionColor[keyword.competition]}`}>
+                        {keyword.competition === 'Baixa' ? 'Low' : 
+                         keyword.competition === 'Média' ? 'Média' : 'Alto'}
+                      </Badge>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {keywordsData.map((keyword, index) => (
-                    <TableRow key={index} className="border-gray-200 hover:bg-gray-50">
-                      <TableCell className="font-medium text-gray-700">{keyword.keyword}</TableCell>
-                      <TableCell className="text-right text-gray-700">{keyword.searchVolume.toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-gray-700">R$ {keyword.cpc.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">
-                        <Badge className={`px-3 py-1 ${competitionColor[keyword.competition]}`}>
-                          {keyword.competition}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>
