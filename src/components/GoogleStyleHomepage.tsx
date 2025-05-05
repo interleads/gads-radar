@@ -29,7 +29,7 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
     const location = queryParts.slice(1).join(' em ').trim();
     onSearch(niche, location);
   };
-  return <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4">
+  return <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-[20px]">
       <div className="mb-8">
         <div className="flex items-end">
           <span className="text-5xl font-medium">

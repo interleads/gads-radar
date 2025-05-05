@@ -1,16 +1,13 @@
 import React from 'react';
 import { Users, BarChart, MapPin, Brain } from 'lucide-react';
 const AuthoritySection: React.FC = () => {
-  return <section className="py-16 bg-gray-50">
+  return <section className="bg-gray-50 py-[10px]">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-8">
           <h2 className="text-3xl font-bold text-brand-blue-800 mb-4">
             Mais de 300 empresas já analisaram seu potencial com o G Ads Radar
           </h2>
-          <p className="text-gray-600 mb-8">
-            Somos uma startup especializada em tráfego local e análise de mercado no Google Ads.
-            Ajudamos empresas a investir com inteligência, analisando concorrência, volume de buscas e potencial de retorno por região e segmento.
-          </p>
+          <p className="text-gray-600 mb-8">Somos uma startup especializada em anúncios no Google Ads. Ajudamos empresas a investir com inteligência, potencializando negócios em canais online.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
