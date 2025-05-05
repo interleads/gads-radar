@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
+import GoogleStyleHomepage from '@/components/GoogleStyleHomepage';
 import SearchForm from '@/components/SearchForm';
 import ResultsCard, { KeywordData } from '@/components/ResultsCard';
 import ServicePlans from '@/components/ServicePlans';
@@ -20,16 +22,23 @@ const Index: React.FC = () => {
     regionName: string;
   } | null>(null);
   const [results, setResults] = useState<typeof pendingResults>(null);
+  const [showGoogleStyle, setShowGoogleStyle] = useState(true);
 
-  const handleSearch = async (niche: string, cep: string) => {
+  const handleSearch = async (niche: string, location: string) => {
     setIsLoading(true);
+    setShowGoogleStyle(false);
     
     try {
+      // Converting location to CEP format for API
+      // In a real app, you would have a proper location to CEP conversion
+      // For now, we'll use location as CEP directly if it looks like one, or a default
+      const cep = location.replace(/\D/g, '').length === 8 ? location : '12345678';
+      
       const data = await fetchKeywordData(niche, cep);
       setPendingResults({
         keywordsData: data.keywords,
         regionGrade: data.regionGrade,
-        location: cep,
+        location: location,
         niche: niche,
         regionName: data.regionName
       });
@@ -78,7 +87,11 @@ const Index: React.FC = () => {
       <Header />
       
       <main className="flex-grow">
-        <SearchForm onSearch={handleSearch} isLoading={isLoading} />
+        {showGoogleStyle ? (
+          <GoogleStyleHomepage onSearch={handleSearch} isLoading={isLoading} />
+        ) : (
+          <SearchForm onSearch={handleSearch} isLoading={isLoading} />
+        )}
         
         <LeadCaptureDialog
           isOpen={showLeadCapture}
