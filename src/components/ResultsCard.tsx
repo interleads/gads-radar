@@ -5,9 +5,9 @@ import {
   CardContent, 
   CardHeader
 } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { Rocket } from 'lucide-react';
+import { Rocket, ChartBar } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export interface KeywordData {
   keyword: string;
@@ -34,35 +34,40 @@ const competitionColor = {
   'Alta': 'bg-brand-red-400 text-white'
 };
 
-const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche, keywordsData }) => {
-  const chartData = keywordsData.map(item => ({
-    name: item.keyword.length > 15 ? item.keyword.substring(0, 15) + '...' : item.keyword,
-    volume: item.searchVolume,
-    cpc: item.cpc
-  }));
+const gradeBackgroundColor = {
+  'A': 'bg-brand-green-500',
+  'B': 'bg-brand-blue-500',
+  'C': 'bg-brand-yellow-500',
+  'D': 'bg-brand-red-500'
+};
 
+const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche, keywordsData }) => {
+  // Calculate total search volume
+  const totalSearchVolume = keywordsData.reduce((sum, item) => sum + item.searchVolume, 0);
+  
   return (
     <div className="animate-fade-in">
-      <Card className="overflow-hidden bg-gradient-to-br from-[#1a1040] to-[#120a2e] border-none text-white shadow-2xl">
+      <Card className="overflow-hidden bg-white border border-gray-200 shadow-md text-gray-800">
         <CardHeader className="p-0">
-          <div className="flex items-center gap-6 p-6 bg-gradient-to-r from-[#1e1148] to-[#2a0e4a]">
-            <div className={`
-              w-24 h-24 rounded-full flex items-center justify-center 
-              text-4xl font-bold 
-              ${
-                regionGrade.grade === 'A' 
-                  ? 'bg-brand-green-400 text-white border-4 border-brand-green-500' 
-                  : `grade-${regionGrade.grade.toLowerCase()}`
-              } 
-              shadow-lg transition-transform hover:scale-105`}>
-              {regionGrade.grade}
+          <div className="flex flex-col md:flex-row">
+            {/* Grade indicator */}
+            <div className="md:w-1/4 p-6 flex items-center justify-center bg-gray-50">
+              <div className={`
+                w-24 h-24 rounded-full flex items-center justify-center 
+                text-4xl font-bold text-white
+                ${gradeBackgroundColor[regionGrade.grade]} 
+                shadow-lg transition-transform hover:scale-105`}>
+                {regionGrade.grade}
+              </div>
             </div>
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold mb-2">Análise de Concorrência</h3>
-              <div className="mt-2 bg-gradient-to-r from-[#ff3366] to-[#ff6b6b] p-4 rounded-xl">
+            
+            {/* Header with message */}
+            <div className="md:w-3/4 p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              <h3 className="text-2xl font-bold mb-3">Análise de Concorrência</h3>
+              <div className="mt-2 bg-white/10 p-4 rounded-xl backdrop-blur-sm">
                 <div className="flex items-center gap-2">
-                  <Rocket className="w-6 h-6" />
-                  <p className="font-medium text-lg">
+                  <Rocket className="w-5 h-5" />
+                  <p className="font-medium">
                     {regionGrade.message}
                   </p>
                 </div>
@@ -72,65 +77,39 @@ const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche,
         </CardHeader>
         
         <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="font-semibold text-xl mb-4">
-                Palavras-chave principais
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <ChartBar className="w-5 h-5 text-blue-500" />
+              <h3 className="font-semibold text-xl text-gray-800">
+                Total de buscas estimadas: <span className="text-blue-600 font-bold">{totalSearchVolume.toLocaleString()}</span>
               </h3>
-              <div className="overflow-x-auto rounded-xl border border-white/10">
-                <Table>
-                  <TableHeader className="bg-white/5">
-                    <TableRow className="border-white/10">
-                      <TableHead className="text-white/90">Palavra-chave</TableHead>
-                      <TableHead className="text-right text-white/90">Volume</TableHead>
-                      <TableHead className="text-right text-white/90">CPC (R$)</TableHead>
-                      <TableHead className="text-right text-white/90">Concorrência</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {keywordsData.map((keyword, index) => (
-                      <TableRow key={index} className="border-white/10">
-                        <TableCell className="font-medium text-white/90">{keyword.keyword}</TableCell>
-                        <TableCell className="text-right text-white/90">{keyword.searchVolume.toLocaleString()}</TableCell>
-                        <TableCell className="text-right text-white/90">R$ {keyword.cpc.toFixed(2)}</TableCell>
-                        <TableCell className="text-right">
-                          <span className={`px-3 py-1 rounded-full text-sm ${competitionColor[keyword.competition]}`}>
-                            {keyword.competition}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
             </div>
             
-            <div>
-              <h3 className="font-semibold text-xl mb-4">
-                Visualização de oportunidades
-              </h3>
-              <div className="h-72 rounded-xl bg-white/5 p-4 border border-white/10">
-                <ResponsiveContainer>
-                  <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 60 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
-                    <XAxis 
-                      dataKey="name"
-                      angle={-45}
-                      textAnchor="end"
-                      height={60}
-                      tick={{ fill: '#fff', fontSize: 12 }}
-                      stroke="rgba(255,255,255,0.3)"
-                    />
-                    <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: '#fff' }} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: '#1a1040', border: '1px solid rgba(255,255,255,0.1)' }}
-                      itemStyle={{ color: '#fff' }}
-                      labelStyle={{ color: '#fff' }}
-                    />
-                    <Bar dataKey="volume" name="Volume de busca" fill="#4F46E5" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+            <div className="overflow-x-auto rounded-xl border border-gray-200">
+              <Table>
+                <TableHeader className="bg-gray-50">
+                  <TableRow className="border-gray-200">
+                    <TableHead className="text-gray-700 font-semibold">Palavra-chave</TableHead>
+                    <TableHead className="text-right text-gray-700 font-semibold">Volume</TableHead>
+                    <TableHead className="text-right text-gray-700 font-semibold">CPC médio (R$)</TableHead>
+                    <TableHead className="text-right text-gray-700 font-semibold">Concorrência</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {keywordsData.map((keyword, index) => (
+                    <TableRow key={index} className="border-gray-200 hover:bg-gray-50">
+                      <TableCell className="font-medium text-gray-700">{keyword.keyword}</TableCell>
+                      <TableCell className="text-right text-gray-700">{keyword.searchVolume.toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-gray-700">R$ {keyword.cpc.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">
+                        <Badge className={`px-3 py-1 ${competitionColor[keyword.competition]}`}>
+                          {keyword.competition}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </div>
         </CardContent>
