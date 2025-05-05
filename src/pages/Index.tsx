@@ -7,6 +7,7 @@ import ResultsCard, { KeywordData } from '@/components/ResultsCard';
 import ServicePlans from '@/components/ServicePlans';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import LeadCaptureDialog from '@/components/LeadCaptureDialog';
+import AuthoritySection from '@/components/AuthoritySection';
 import { fetchKeywordData } from '@/services/api';
 
 const Index: React.FC = () => {
@@ -120,7 +121,10 @@ const Index: React.FC = () => {
         )}
         
         {searchPerformed && !isLoading && (
-          <ServicePlans />
+          <>
+            <AuthoritySection />
+            <ServicePlans />
+          </>
         )}
       </main>
       
