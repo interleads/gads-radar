@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { User, Mail, Phone, Database, X } from 'lucide-react';
 import {
@@ -42,8 +41,8 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
     
     if (!phone.trim()) {
       newErrors.phone = 'Telefone é obrigatório';
-    } else if (!/^\(\d{2}\) \d{5}-\d{4}$/.test(phone)) {
-      newErrors.phone = 'Telefone inválido (formato: (99) 99999-9999)';
+    } else if (!/^\(\d{2}\) \d{4,5}-\d{4}$/.test(phone)) {
+      newErrors.phone = 'Telefone inválido (formato: (99) 9999-9999 ou (99) 99999-9999)';
     }
     
     setErrors(newErrors);
@@ -59,13 +58,29 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
+    
     if (value.length <= 11) {
+      // Format the phone number
       if (value.length > 2) {
         value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
       }
+      
+      // Handle 8 or 9 digit numbers after DDD
       if (value.length > 9) {
-        value = `${value.slice(0, 9)}-${value.slice(9)}`;
+        const afterDDD = value.slice(5);
+        if (afterDDD.length <= 4) {
+          // For shorter numbers like (99) 9999
+          value = value;
+        } else if (afterDDD.length === 5) {
+          // For 9-digit numbers like (99) 99999
+          value = `${value.slice(0, 10)}-${value.slice(10)}`;
+        } else {
+          // For numbers with hyphen already in place
+          const baseLength = value.length >= 11 ? 11 : 10;
+          value = `${value.slice(0, baseLength)}-${value.slice(baseLength)}`;
+        }
       }
+      
       setPhone(value);
     }
   };
@@ -124,7 +139,7 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
               <Phone className="absolute left-3 top-2.5 h-5 w-5 text-white/70" />
               <Input
                 id="phone"
-                placeholder="(99) 99999-9999"
+                placeholder="(99) 9999-9999"
                 value={phone}
                 onChange={handlePhoneChange}
                 className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-white/30 focus-visible:border-white/30"
