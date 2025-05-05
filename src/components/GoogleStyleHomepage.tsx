@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 interface GoogleStyleHomepageProps {
-  onSearch: (query: string) => void;
+  onSearch: (niche: string, location: string) => void;
   isLoading: boolean;
 }
 
@@ -39,11 +39,6 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({ onSearch, isL
         <div className="flex items-end">
           <span className="text-5xl font-medium">
             <span className="text-blue-500">G</span>
-            <span className="text-red-500">o</span>
-            <span className="text-yellow-400">o</span>
-            <span className="text-blue-500">g</span>
-            <span className="text-green-500">l</span>
-            <span className="text-red-500">e</span>
           </span>
           <div className="ml-2 pb-1">
             <span className="text-gray-600 text-2xl font-normal">Ads</span>
@@ -69,20 +64,13 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({ onSearch, isL
             <Mic className="absolute right-4 text-blue-500 cursor-pointer" size={20} />
           </div>
           
-          <div className="mt-8 flex justify-center space-x-4">
+          <div className="mt-8 flex justify-center">
             <Button
               type="submit"
               className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-normal py-2 px-6 rounded-md border-none"
               disabled={isLoading}
             >
-              {isLoading ? 'Buscando...' : 'Pesquisar no Google'}
-            </Button>
-            <Button
-              type="button"
-              className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-normal py-2 px-6 rounded-md border-none"
-              disabled={isLoading}
-            >
-              Estou com sorte
+              {isLoading ? 'Buscando...' : 'Pesquisar'}
             </Button>
           </div>
         </form>
