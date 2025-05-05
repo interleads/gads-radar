@@ -1,21 +1,17 @@
-
 import React, { useState } from 'react';
 import { Search, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-
 interface GoogleStyleHomepageProps {
   onSearch: (niche: string, location: string) => void;
   isLoading: boolean;
 }
-
 const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
   onSearch,
   isLoading
 }) => {
   const [query, setQuery] = useState('');
-  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) {
@@ -33,16 +29,11 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
     const location = queryParts.slice(1).join(' em ').trim();
     onSearch(niche, location);
   };
-  
   return <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4">
       <div className="mb-8">
         <div className="flex items-end">
           <span className="text-5xl font-medium">
-            <img 
-              src="/lovable-uploads/d5a5f540-040c-4d28-90db-f39b1c150c89.png" 
-              alt="G logo" 
-              className="h-14 w-14 object-contain"
-            />
+            <img alt="G logo" className="h-14 w-14 object-contain" src="https://logopng.com.br/logos/google-37.svg" />
           </span>
           <div className="ml-2 pb-1">
             <span className="text-gray-600 font-normal text-4xl">Ads</span>
@@ -72,5 +63,4 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
       </div>
     </div>;
 };
-
 export default GoogleStyleHomepage;
