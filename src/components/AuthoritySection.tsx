@@ -1,10 +1,7 @@
-
 import React from 'react';
 import { Users, BarChart, MapPin, Brain } from 'lucide-react';
-
 const AuthoritySection: React.FC = () => {
-  return (
-    <section className="py-16 bg-gray-50">
+  return <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-8">
           <h2 className="text-3xl font-bold text-brand-blue-800 mb-4">
@@ -71,13 +68,9 @@ const AuthoritySection: React.FC = () => {
         </div>
 
         <div className="text-center">
-          <p className="text-lg font-medium text-brand-blue-700">
-            Pronto para anunciar com inteligência? Escolha seu plano ideal abaixo.
-          </p>
+          
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default AuthoritySection;
