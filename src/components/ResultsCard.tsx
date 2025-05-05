@@ -29,16 +29,16 @@ interface ResultsCardProps {
 }
 
 const competitionColor = {
-  'Baixa': 'bg-brand-green-400 text-white',
-  'Média': 'bg-brand-yellow-400 text-white',
-  'Alta': 'bg-brand-red-400 text-white'
+  'Baixa': 'bg-green-500 text-white',
+  'Média': 'bg-yellow-500 text-white',
+  'Alta': 'bg-red-500 text-white'
 };
 
 const gradeBackgroundColor = {
-  'A': 'bg-brand-green-500',
+  'A': 'bg-green-500',
   'B': 'bg-brand-blue-500',
-  'C': 'bg-brand-yellow-500',
-  'D': 'bg-brand-red-500'
+  'C': 'bg-yellow-500',
+  'D': 'bg-red-500'
 };
 
 const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche, keywordsData }) => {
@@ -47,50 +47,52 @@ const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche,
   
   return (
     <div className="animate-fade-in">
-      <Card className="overflow-hidden bg-white border border-gray-200 shadow-lg">
-        {/* Enhanced Card Header with stronger shadow and border to separate from content */}
-        <CardHeader className="p-0 shadow-md border-b border-gray-200">
-          <div className="flex flex-col md:flex-row">
-            {/* Grade indicator with enhanced shadow */}
-            <div className="md:w-1/4 p-6 flex items-center justify-center bg-gray-50">
-              <div className={`
-                w-24 h-24 rounded-full flex items-center justify-center 
-                text-[5rem] font-bold text-white
-                ${gradeBackgroundColor[regionGrade.grade]} 
-                shadow-xl`}>
-                {regionGrade.grade}
-              </div>
+      <Card className="overflow-hidden bg-white border border-gray-200 shadow-lg rounded-lg">
+        {/* Header section with grade and search volume following the image model */}
+        <div className="flex flex-col md:flex-row items-center p-6 bg-white">
+          {/* Grade indicator circle */}
+          <div className="md:w-1/4 flex items-center justify-center mb-4 md:mb-0">
+            <div className={`
+              w-36 h-36 rounded-full flex items-center justify-center
+              text-[6rem] font-bold text-white
+              ${gradeBackgroundColor[regionGrade.grade]} 
+              shadow-lg`}>
+              {regionGrade.grade}
             </div>
-            
-            {/* Search volume and message with enhanced contrast */}
-            <div className="md:w-3/4 flex flex-col">
-              <div className="bg-white p-6">
-                <h2 className="text-4xl font-bold text-gray-800">
-                  {totalSearchVolume.toLocaleString()} buscas
-                </h2>
-              </div>
-              <div className="bg-teal-500 p-4 text-white">
-                <div className="flex items-center gap-2">
-                  <Rocket className="w-5 h-5" />
-                  <p className="font-medium text-lg">
-                    Alto potencial de lucratividade em anúncios no Google
-                  </p>
-                </div>
+          </div>
+          
+          {/* Search volume and profitability message */}
+          <div className="md:w-3/4 flex flex-col md:pl-6">
+            <div className="mb-4">
+              <h2 className="text-5xl font-bold text-slate-800">
+                {totalSearchVolume.toLocaleString()} buscas
+              </h2>
+            </div>
+            <div className="bg-teal-500 p-4 text-white w-full rounded-lg">
+              <div className="flex items-center gap-2">
+                <Rocket className="w-6 h-6 text-white" />
+                <p className="font-medium text-xl">
+                  Alto potencial de lucratividade em anúncios no Google
+                </p>
               </div>
             </div>
           </div>
-        </CardHeader>
+        </div>
         
-        <CardContent className="p-6 bg-gray-50">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Palavras-chave principais</h3>
-          <div className="overflow-x-auto bg-white rounded-lg shadow-sm">
+        {/* Keywords section with clear separation from header */}
+        <div className="border-t border-gray-200"></div>
+        
+        <CardContent className="p-6 bg-white">
+          <h3 className="text-2xl font-bold text-slate-800 mb-6">Palavras-chave principais</h3>
+          
+          <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-100 border-b-2 border-gray-300">
-                  <TableHead className="text-gray-700 font-medium">Palavra-chave</TableHead>
-                  <TableHead className="text-right text-gray-700 font-medium">Volume de busca</TableHead>
-                  <TableHead className="text-right text-gray-700 font-medium">CPC médio (R$)</TableHead>
-                  <TableHead className="text-right text-gray-700 font-medium">Concorrência</TableHead>
+                <TableRow className="bg-gray-50 border-b border-gray-200">
+                  <TableHead className="text-gray-700 font-medium text-lg py-4">Palavra-chave</TableHead>
+                  <TableHead className="text-right text-gray-700 font-medium text-lg py-4">Volume de busca</TableHead>
+                  <TableHead className="text-right text-gray-700 font-medium text-lg py-4">CPC médio (R$)</TableHead>
+                  <TableHead className="text-right text-gray-700 font-medium text-lg py-4">Concorrência</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -101,8 +103,8 @@ const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche,
                     <TableCell className="text-right text-gray-700">{keyword.cpc.toFixed(2)}</TableCell>
                     <TableCell className="text-right">
                       <Badge className={`px-3 py-1 ${competitionColor[keyword.competition]}`}>
-                        {keyword.competition === 'Baixa' ? 'Low' : 
-                         keyword.competition === 'Média' ? 'Média' : 'Alto'}
+                        {keyword.competition === 'Baixa' ? 'Baixa' : 
+                         keyword.competition === 'Média' ? 'Média' : 'Alta'}
                       </Badge>
                     </TableCell>
                   </TableRow>
