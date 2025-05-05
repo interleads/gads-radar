@@ -85,7 +85,7 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
     }
   };
   return <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-brand-gray-700 to-brand-blue-500 border-none text-black">
+      <DialogContent className="sm:max-w-md bg-gradient-to-br from-brand-gray-700 to-brand-white-500 border-none text-black">
         <DialogHeader className="space-y-4">
           <div className="mx-auto p-3 rounded-full bg-white/20 backdrop-blur-sm">
             <Database className="w-8 h-8 text-white" />
