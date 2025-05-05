@@ -47,21 +47,22 @@ const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche,
   
   return (
     <div className="animate-fade-in">
-      <Card className="overflow-hidden bg-white border border-gray-200 shadow-md">
-        <CardHeader className="p-0">
+      <Card className="overflow-hidden bg-white border border-gray-200 shadow-lg">
+        {/* Enhanced Card Header with stronger shadow and border to separate from content */}
+        <CardHeader className="p-0 shadow-md border-b border-gray-200">
           <div className="flex flex-col md:flex-row">
-            {/* Grade indicator */}
+            {/* Grade indicator with enhanced shadow */}
             <div className="md:w-1/4 p-6 flex items-center justify-center bg-gray-50">
               <div className={`
                 w-24 h-24 rounded-full flex items-center justify-center 
                 text-[5rem] font-bold text-white
                 ${gradeBackgroundColor[regionGrade.grade]} 
-                shadow-lg`}>
+                shadow-xl`}>
                 {regionGrade.grade}
               </div>
             </div>
             
-            {/* Search volume and message */}
+            {/* Search volume and message with enhanced contrast */}
             <div className="md:w-3/4 flex flex-col">
               <div className="bg-white p-6">
                 <h2 className="text-4xl font-bold text-gray-800">
@@ -80,12 +81,12 @@ const ResultsCard: React.FC<ResultsCardProps> = ({ regionGrade, location, niche,
           </div>
         </CardHeader>
         
-        <CardContent className="p-6">
+        <CardContent className="p-6 bg-gray-50">
           <h3 className="text-xl font-bold text-gray-800 mb-4">Palavras-chave principais</h3>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto bg-white rounded-lg shadow-sm">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-100">
+                <TableRow className="bg-gray-100 border-b-2 border-gray-300">
                   <TableHead className="text-gray-700 font-medium">Palavra-chave</TableHead>
                   <TableHead className="text-right text-gray-700 font-medium">Volume de busca</TableHead>
                   <TableHead className="text-right text-gray-700 font-medium">CPC médio (R$)</TableHead>
