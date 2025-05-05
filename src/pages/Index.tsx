@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 import GoogleStyleHomepage from '@/components/GoogleStyleHomepage';
-import SearchForm from '@/components/SearchForm';
 import ResultsCard, { KeywordData } from '@/components/ResultsCard';
 import ServicePlans from '@/components/ServicePlans';
 import SkeletonLoader from '@/components/SkeletonLoader';
@@ -22,11 +21,13 @@ const Index: React.FC = () => {
     regionName: string;
   } | null>(null);
   const [results, setResults] = useState<typeof pendingResults>(null);
+  // Removemos a alternância da interface, mantendo sempre o GoogleStyleHomepage
   const [showGoogleStyle, setShowGoogleStyle] = useState(true);
 
   const handleSearch = async (niche: string, location: string) => {
     setIsLoading(true);
-    setShowGoogleStyle(false);
+    // Removemos a linha que alterava a interface
+    // setShowGoogleStyle(false);
     
     try {
       // Converting location to CEP format for API
@@ -87,11 +88,8 @@ const Index: React.FC = () => {
       <Header />
       
       <main className="flex-grow">
-        {showGoogleStyle ? (
-          <GoogleStyleHomepage onSearch={handleSearch} isLoading={isLoading} />
-        ) : (
-          <SearchForm onSearch={handleSearch} isLoading={isLoading} />
-        )}
+        {/* Mantemos sempre a interface Google */}
+        <GoogleStyleHomepage onSearch={handleSearch} isLoading={isLoading} />
         
         <LeadCaptureDialog
           isOpen={showLeadCapture}

@@ -72,72 +72,72 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-[#1a1040] to-[#120a2e] border-none text-white">
+      <DialogContent className="sm:max-w-md bg-gradient-to-br from-brand-blue-700 to-brand-blue-500 border-none text-white">
         <DialogHeader className="space-y-4">
-          <div className="mx-auto p-3 rounded-full bg-brand-blue-600/30">
-            <Database className="w-8 h-8 text-brand-blue-400" />
+          <div className="mx-auto p-3 rounded-full bg-white/20 backdrop-blur-sm">
+            <Database className="w-8 h-8 text-white" />
           </div>
-          <DialogTitle className="text-center text-xl">
+          <DialogTitle className="text-center text-xl font-medium">
             Para acessar o relatório, informe os dados abaixo
           </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-6 py-4">
+        <form onSubmit={handleSubmit} className="space-y-5 py-4">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-white">Nome</Label>
+            <Label htmlFor="name" className="text-white/90 font-medium">Nome</Label>
             <div className="relative">
-              <User className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
+              <User className="absolute left-3 top-2.5 h-5 w-5 text-white/70" />
               <Input
                 id="name"
                 placeholder="Seu nome completo"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-white/30 focus-visible:border-white/30"
               />
               {errors.name && (
-                <span className="text-sm text-red-400 mt-1">{errors.name}</span>
+                <span className="text-sm text-red-300 mt-1 block">{errors.name}</span>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-white">E-mail</Label>
+            <Label htmlFor="email" className="text-white/90 font-medium">E-mail</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
+              <Mail className="absolute left-3 top-2.5 h-5 w-5 text-white/70" />
               <Input
                 id="email"
                 type="email"
                 placeholder="seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-white/30 focus-visible:border-white/30"
               />
               {errors.email && (
-                <span className="text-sm text-red-400 mt-1">{errors.email}</span>
+                <span className="text-sm text-red-300 mt-1 block">{errors.email}</span>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone" className="text-white">Telefone</Label>
+            <Label htmlFor="phone" className="text-white/90 font-medium">Telefone</Label>
             <div className="relative">
-              <Phone className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
+              <Phone className="absolute left-3 top-2.5 h-5 w-5 text-white/70" />
               <Input
                 id="phone"
                 placeholder="(99) 99999-9999"
                 value={phone}
                 onChange={handlePhoneChange}
-                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-white/30 focus-visible:border-white/30"
               />
               {errors.phone && (
-                <span className="text-sm text-red-400 mt-1">{errors.phone}</span>
+                <span className="text-sm text-red-300 mt-1 block">{errors.phone}</span>
               )}
             </div>
           </div>
 
           <Button 
             type="submit" 
-            className="w-full bg-brand-green hover:bg-brand-green-600 text-white"
+            className="w-full bg-brand-green hover:bg-brand-green-600 text-white font-medium py-5 h-auto"
           >
             Ver resultados agora
           </Button>
