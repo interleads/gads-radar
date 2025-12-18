@@ -3,31 +3,36 @@ import { Search, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { parseSearchQuery } from '@/lib/searchParser';
+
 interface GoogleStyleHomepageProps {
   onSearch: (niche: string, location: string) => void;
   isLoading: boolean;
 }
+
 const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
   onSearch,
   isLoading
 }) => {
   const [query, setQuery] = useState('');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) {
-      toast.error('Por favor, digite seu segmento e cidade');
+    
+    const result = parseSearchQuery(query);
+    
+    if (!result.success) {
+      if (result.suggestion) {
+        toast.error(result.error, {
+          description: result.suggestion
+        });
+      } else {
+        toast.error(result.error || 'Erro ao processar busca');
+      }
       return;
     }
-
-    // Extract niche and location from the query (e.g., "farmácia em Natal")
-    const queryParts = query.split(' em ');
-    if (queryParts.length < 2) {
-      toast.error('Por favor, digite no formato "segmento em cidade"');
-      return;
-    }
-    const niche = queryParts[0].trim();
-    const location = queryParts.slice(1).join(' em ').trim();
-    onSearch(niche, location);
+    
+    onSearch(result.niche!, result.city!);
   };
   return <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-[20px]">
       <div className="mb-8">
