@@ -47,15 +47,19 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
         </div>
       </div>
       
-      <p className="text-gray-800 mb-6 text-lg font-medium px-[21px] py-0 text-center">
+      <p className="text-gray-800 mb-2 text-lg font-medium px-[21px] py-0 text-center">
         Descubra se sua empresa está perdendo vendas!
+      </p>
+      
+      <p className="text-gray-500 mb-6 text-sm md:text-base text-center px-4 max-w-xl">
+        Digite seu serviço e sua cidade. Em 10 segundos, revelamos a demanda real que você não está aproveitando.
       </p>
       
       <div className="w-full max-w-2xl">
         <form onSubmit={handleSubmit} className="relative">
           <div className="relative flex items-center">
             <Search className="absolute left-4 text-gray-400" size={20} />
-            <Input className="pl-12 pr-12 py-6 h-14 rounded-full border border-gray-200 shadow-sm hover:shadow-md focus-visible:shadow-md transition-shadow text-base" placeholder="Digite o seu segmento + cidade (Ex: farmácia em Natal)" value={query} onChange={e => setQuery(e.target.value)} />
+            <Input className="pl-12 pr-12 py-6 h-14 rounded-full border border-gray-200 shadow-sm hover:shadow-md focus-visible:shadow-md transition-shadow text-base" placeholder="Ex: Advogado em Curitiba, Pizzaria em SP..." value={query} onChange={e => setQuery(e.target.value)} />
             <Mic className="absolute right-4 text-blue-500 cursor-pointer" size={20} />
           </div>
           
