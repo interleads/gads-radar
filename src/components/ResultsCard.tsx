@@ -1,46 +1,57 @@
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { Rocket } from 'lucide-react';
+import { Rocket, TrendingUp, Search, Hash } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+
 export interface KeywordData {
   keyword: string;
   searchVolume: number;
   competition: 'Baixa' | 'Média' | 'Alta';
   cpc: number;
 }
+
 interface RegionGradeProps {
   grade: 'A' | 'B' | 'C' | 'D';
   message: string;
 }
+
 interface ResultsCardProps {
   regionGrade: RegionGradeProps;
   location: string;
   niche: string;
   keywordsData: KeywordData[];
+  primaryKeywordVolume: number;
+  totalVolume: number;
+  keywordCount: number;
 }
+
 const competitionColor = {
   'Baixa': 'bg-green-500 text-white',
   'Média': 'bg-yellow-500 text-white',
   'Alta': 'bg-red-500 text-white'
 };
+
 const gradeBackgroundColor = {
   'A': 'bg-green-500',
   'B': 'bg-brand-blue-500',
   'C': 'bg-yellow-500',
   'D': 'bg-red-500'
 };
+
 const ResultsCard: React.FC<ResultsCardProps> = ({
   regionGrade,
   location,
   niche,
-  keywordsData
+  keywordsData,
+  primaryKeywordVolume,
+  totalVolume,
+  keywordCount
 }) => {
-  // Calculate total search volume
-  const totalSearchVolume = keywordsData.reduce((sum, item) => sum + item.searchVolume, 0);
-  return <div className="animate-fade-in">
+  return (
+    <div className="animate-fade-in">
       <Card className="overflow-hidden bg-white border border-gray-200 shadow-lg rounded-lg">
-        {/* Header section with grade and search volume following the image model */}
+        {/* Header section with grade and search volume */}
         <div className="flex flex-col md:flex-row items-center p-6 bg-white">
           {/* Grade indicator circle */}
           <div className="md:w-1/4 flex items-center justify-center mb-4 md:mb-0">
@@ -53,29 +64,59 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
             </div>
           </div>
           
-          {/* Search volume and profitability message */}
-          <div className="md:w-3/4 flex flex-col md:pl-6">
-            <div className="mb-4">
-              <h2 className="font-bold text-slate-800 text-4xl text-left">
-                {totalSearchVolume.toLocaleString()} buscas
+          {/* Search volume and stats */}
+          <div className="md:w-3/4 flex flex-col md:pl-6 gap-4">
+            {/* Primary keyword volume - destacado */}
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
+                <Search className="w-4 h-4" />
+                <span>Volume da keyword principal "{niche}"</span>
+              </div>
+              <h2 className="font-bold text-slate-800 text-4xl">
+                {primaryKeywordVolume.toLocaleString()} buscas/mês
               </h2>
             </div>
+
+            {/* Stats row */}
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-teal-600" />
+                <div>
+                  <span className="text-sm text-gray-500">Volume total</span>
+                  <p className="font-bold text-slate-800">{totalVolume.toLocaleString()}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
+                <Hash className="w-5 h-5 text-teal-600" />
+                <div>
+                  <span className="text-sm text-gray-500">Keywords relacionadas</span>
+                  <p className="font-bold text-slate-800">{keywordCount}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Profitability message */}
             <div className="bg-teal-500 p-4 text-white w-full rounded-lg">
               <div className="flex items-center gap-2">
-                <Rocket className="w-6 h-6 text-white rounded-none" />
-                <p className="font-medium text-xl text-left">
-                  Alto potencial de lucratividade em anúncios no Google
+                <Rocket className="w-6 h-6 text-white" />
+                <p className="font-medium text-lg">
+                  {regionGrade.grade === 'A' && 'Excelente potencial! Alta demanda para anúncios no Google.'}
+                  {regionGrade.grade === 'B' && 'Bom potencial de lucratividade em anúncios no Google.'}
+                  {regionGrade.grade === 'C' && 'Potencial moderado. Estratégia bem planejada pode trazer resultados.'}
+                  {regionGrade.grade === 'D' && 'Baixa demanda. Considere expandir a área de atuação.'}
                 </p>
               </div>
             </div>
           </div>
         </div>
         
-        {/* Keywords section with clear separation from header */}
+        {/* Keywords section */}
         <div className="border-t border-gray-200"></div>
         
         <CardContent className="p-6 bg-white">
-          <h3 className="text-2xl font-bold text-slate-800 mb-6">Palavras-chave principais</h3>
+          <h3 className="text-2xl font-bold text-slate-800 mb-6">
+            Top {keywordsData.length} palavras-chave
+          </h3>
           
           <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
             <Table>
@@ -88,21 +129,35 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {keywordsData.map((keyword, index) => <TableRow key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <TableCell className="font-medium text-gray-700">{keyword.keyword}</TableCell>
-                    <TableCell className="text-right text-gray-700">{keyword.searchVolume.toLocaleString()}</TableCell>
-                    <TableCell className="text-right text-gray-700">{keyword.cpc.toFixed(2)}</TableCell>
+                {keywordsData.map((keyword, index) => (
+                  <TableRow 
+                    key={index} 
+                    className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} ${index === 0 ? "border-l-4 border-l-teal-500" : ""}`}
+                  >
+                    <TableCell className={`font-medium text-gray-700 ${index === 0 ? "font-bold" : ""}`}>
+                      {keyword.keyword}
+                      {index === 0 && <Badge className="ml-2 bg-teal-500 text-white">Principal</Badge>}
+                    </TableCell>
+                    <TableCell className="text-right text-gray-700 font-semibold">
+                      {keyword.searchVolume.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right text-gray-700">
+                      {keyword.cpc.toFixed(2)}
+                    </TableCell>
                     <TableCell className="text-right">
                       <Badge className={`px-3 py-1 ${competitionColor[keyword.competition]}`}>
-                        {keyword.competition === 'Baixa' ? 'Baixa' : keyword.competition === 'Média' ? 'Média' : 'Alta'}
+                        {keyword.competition}
                       </Badge>
                     </TableCell>
-                  </TableRow>)}
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
         </CardContent>
       </Card>
-    </div>;
+    </div>
+  );
 };
+
 export default ResultsCard;

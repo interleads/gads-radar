@@ -18,6 +18,9 @@ const Index: React.FC = () => {
     location: string;
     niche: string;
     regionName: string;
+    primaryKeywordVolume: number;
+    totalVolume: number;
+    keywordCount: number;
   } | null>(null);
   const [results, setResults] = useState<typeof pendingResults>(null);
   // Removemos a alternância da interface, mantendo sempre o GoogleStyleHomepage
@@ -35,7 +38,10 @@ const Index: React.FC = () => {
         regionGrade: data.regionGrade,
         location: location,
         niche: niche,
-        regionName: data.regionName
+        regionName: data.regionName,
+        primaryKeywordVolume: data.primaryKeywordVolume,
+        totalVolume: data.totalVolume,
+        keywordCount: data.keywordCount
       });
       setShowLeadCapture(true);
     } catch (error) {
@@ -90,10 +96,18 @@ const Index: React.FC = () => {
             <div className="container">
               <h2 className="text-2xl font-bold text-center mb-8">Resultados da Análise</h2>
               
-              {isLoading ? <SkeletonLoader /> : results && <ResultsCard regionGrade={{
-            grade: results.regionGrade,
-            message: getRegionMessage(results.regionGrade, results.regionName, results.niche)
-          }} location={results.location} niche={results.niche} keywordsData={results.keywordsData} />}
+              {isLoading ? <SkeletonLoader /> : results && <ResultsCard 
+                regionGrade={{
+                  grade: results.regionGrade,
+                  message: getRegionMessage(results.regionGrade, results.regionName, results.niche)
+                }} 
+                location={results.location} 
+                niche={results.niche} 
+                keywordsData={results.keywordsData}
+                primaryKeywordVolume={results.primaryKeywordVolume}
+                totalVolume={results.totalVolume}
+                keywordCount={results.keywordCount}
+              />}
             </div>
           </section>}
         

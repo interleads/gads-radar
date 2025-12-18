@@ -135,25 +135,25 @@ serve(async (req) => {
     const selectedCity = cityMatch.city;
     console.log('City selected:', selectedCity);
 
-    // 4. CHAMAR DATAFORSEO API
+    // 4. CHAMAR DATAFORSEO API - USANDO keywords_for_keywords PARA OBTER KEYWORDS RELACIONADAS
     const login = Deno.env.get('DATAFORSEO_LOGIN');
     const password = Deno.env.get('DATAFORSEO_PASSWORD');
     const creds = btoa(`${login}:${password}`);
 
+    // Novo payload para o endpoint keywords_for_keywords
     const payload = [{
       "location_code": selectedCity.dataforseo_id,
       "language_code": "pt",
-      "keywords": [
-        melhor_nicho,
-        `preço ${melhor_nicho}`,
-        `melhor ${melhor_nicho}`
-      ],
-      "sort_by": "search_volume"
+      "keywords": [melhor_nicho], // Apenas a keyword principal
+      "include_seed_keyword": true,
+      "sort_by": "search_volume",
+      "limit": 50 // Limitar para performance
     }];
     
-    console.log('DataForSEO payload:', payload);
+    console.log('DataForSEO payload:', JSON.stringify(payload));
 
-    const dfsResponse = await fetch('https://api.dataforseo.com/v3/keywords_data/google_ads/search_volume/live', {
+    // Endpoint correto: keywords_for_keywords retorna a keyword principal + relacionadas
+    const dfsResponse = await fetch('https://api.dataforseo.com/v3/keywords_data/google_ads/keywords_for_keywords/live', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${creds}`,
@@ -165,6 +165,7 @@ serve(async (req) => {
     const dfsData = await dfsResponse.json();
     
     console.log('DataForSEO response status:', dfsResponse.status);
+    console.log('DataForSEO response:', JSON.stringify(dfsData).substring(0, 500));
 
     return new Response(JSON.stringify({ 
       success: true,
