@@ -43,7 +43,7 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
       {/* Professional Hero Section - Strategic Opportunity */}
       <div className="bg-slate-900 p-6 md:p-10 rounded-xl shadow-2xl mb-6">
         {/* Main Headline */}
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white leading-tight mb-4">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white leading-tight mb-4 text-center">
           Análise de Mercado:{" "}
           <span className="text-amber-400 text-3xl md:text-4xl lg:text-5xl font-black">
             {displayTotalVolume.toLocaleString()}
@@ -52,7 +52,7 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
         </h1>
 
         {/* Subheadline */}
-        <p className="text-base md:text-lg text-slate-300 mb-8">
+        <p className="text-base md:text-lg text-slate-300 mb-8 text-center">
           A demanda por <strong className="text-white">"{niche}"</strong> em{" "}
           <strong className="text-white">{location}</strong> é alta. 
           Enquanto você lê isso, seus concorrentes estão capturando esses cliques e transformando buscas em vendas.
