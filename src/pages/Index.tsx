@@ -146,10 +146,6 @@ const Index: React.FC = () => {
                 <SkeletonLoader />
               ) : results && (
                 <ResultsCard 
-                  regionGrade={{
-                    grade: results.regionGrade,
-                    message: getRegionMessage(results.regionGrade, results.regionName, results.niche)
-                  }} 
                   location={results.location} 
                   niche={results.niche} 
                   keywordsData={results.keywordsData}

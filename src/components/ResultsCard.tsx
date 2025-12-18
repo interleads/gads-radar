@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { Rocket, TrendingUp, Search, Hash } from 'lucide-react';
+import { AlertTriangle, Users, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export interface KeywordData {
@@ -11,13 +11,7 @@ export interface KeywordData {
   cpc: number;
 }
 
-interface RegionGradeProps {
-  grade: 'A' | 'B' | 'C' | 'D';
-  message: string;
-}
-
 interface ResultsCardProps {
-  regionGrade: RegionGradeProps;
   location: string;
   niche: string;
   keywordsData: KeywordData[];
@@ -33,89 +27,72 @@ const competitionColor = {
   'Alta': 'bg-red-500 text-white'
 };
 
-const gradeBackgroundColor = {
-  'A': 'bg-green-500',
-  'B': 'bg-brand-blue-500',
-  'C': 'bg-yellow-500',
-  'D': 'bg-red-500'
-};
-
 const ResultsCard: React.FC<ResultsCardProps> = ({
-  regionGrade,
   location,
   niche,
   keywordsData,
   primaryKeywordVolume = 0,
   totalVolume = 0,
   keywordCount = 0,
-  annualVolume = 0
 }) => {
-  // Fallback: se não tiver os novos valores, calcular do keywordsData
-  const displayPrimaryVolume = primaryKeywordVolume || keywordsData[0]?.searchVolume || 0;
   const displayTotalVolume = totalVolume || keywordsData.reduce((sum, k) => sum + k.searchVolume, 0);
   const displayKeywordCount = keywordCount || keywordsData.length;
-  const displayAnnualVolume = annualVolume || displayPrimaryVolume * 12;
+
   return (
     <div className="animate-fade-in">
-      <Card className="overflow-hidden bg-white border border-gray-200 shadow-lg rounded-lg">
-        {/* Header section with grade and search volume */}
-        <div className="flex flex-col md:flex-row items-center p-6 bg-white">
-          {/* Grade indicator circle */}
-          <div className="md:w-1/4 flex items-center justify-center mb-4 md:mb-0">
-            <div className={`
-              w-36 h-36 rounded-full flex items-center justify-center
-              text-[6rem] font-bold text-white
-              ${gradeBackgroundColor[regionGrade.grade]} 
-              shadow-lg`}>
-              {regionGrade.grade}
+      {/* Hero Alert Section - Urgência */}
+      <div className="bg-gradient-to-r from-red-100 via-orange-100 to-amber-50 border-l-4 border-red-500 p-6 md:p-8 rounded-lg shadow-lg mb-6">
+        {/* Main Headline */}
+        <div className="flex items-start gap-3 mb-4">
+          <AlertTriangle className="w-8 h-8 md:w-10 md:h-10 text-red-600 flex-shrink-0 mt-1" />
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 leading-tight">
+            Alerta: Sua empresa está invisível para{" "}
+            <span className="text-red-600 text-3xl md:text-4xl lg:text-5xl font-black">
+              {displayTotalVolume.toLocaleString()}
+            </span>{" "}
+            potenciais clientes este mês.
+          </h1>
+        </div>
+
+        {/* Subheadline */}
+        <p className="text-base md:text-lg text-gray-700 mb-6 ml-0 md:ml-11">
+          Neste exato momento, milhares de pessoas estão pesquisando por{" "}
+          <strong className="text-gray-900">"{niche}"</strong> no Google em{" "}
+          <strong className="text-gray-900">{location}</strong>. 
+          Seus concorrentes estão aparecendo para elas, <strong className="text-red-700">mas você não</strong>.
+        </p>
+
+        {/* Visual Data Highlight */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 bg-white/80 backdrop-blur-sm p-4 md:p-6 rounded-lg border border-red-200 ml-0 md:ml-11">
+          <div className="flex items-center gap-2">
+            <div className="flex -space-x-3">
+              <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center border-2 border-white">
+                <Users className="w-5 h-5 text-white" />
+              </div>
+              <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center border-2 border-white">
+                <Users className="w-5 h-5 text-white" />
+              </div>
+              <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center border-2 border-white">
+                <Search className="w-5 h-5 text-white" />
+              </div>
             </div>
           </div>
-          
-          {/* Search volume and stats */}
-          <div className="md:w-3/4 flex flex-col md:pl-6 gap-4">
-            {/* Primary keyword volume - destacado */}
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
-                <Search className="w-4 h-4" />
-                <span>Volume da keyword principal "{niche}"</span>
-              </div>
-              <h2 className="font-bold text-slate-800 text-4xl">
-                {displayPrimaryVolume.toLocaleString()} buscas/mês
-              </h2>
-            </div>
-
-            {/* Stats row - Total mensal destacado como o Google */}
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 bg-teal-50 border border-teal-200 px-4 py-3 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-teal-600" />
-                <div>
-                  <span className="text-sm text-teal-700 font-medium">Total mensal (todas keywords)</span>
-                  <p className="font-bold text-teal-800 text-xl">{displayTotalVolume.toLocaleString()}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
-                <Hash className="w-5 h-5 text-teal-600" />
-                <div>
-                  <span className="text-sm text-gray-500">Keywords analisadas</span>
-                  <p className="font-bold text-slate-800">{displayKeywordCount}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Profitability message */}
-            <div className="bg-teal-500 p-4 text-white w-full rounded-lg">
-              <div className="flex items-center gap-2">
-                <Rocket className="w-6 h-6 text-white" />
-                <p className="font-medium text-lg">
-                  {regionGrade.grade === 'A' && 'Excelente potencial! Alta demanda para anúncios no Google.'}
-                  {regionGrade.grade === 'B' && 'Bom potencial de lucratividade em anúncios no Google.'}
-                  {regionGrade.grade === 'C' && 'Potencial moderado. Estratégia bem planejada pode trazer resultados.'}
-                  {regionGrade.grade === 'D' && 'Baixa demanda. Considere expandir a área de atuação.'}
-                </p>
-              </div>
-            </div>
+          <div className="text-center sm:text-left">
+            <p className="text-sm text-gray-600 font-medium">
+              Volume Total de Buscas na sua Região
+            </p>
+            <p className="text-2xl md:text-3xl font-black text-red-600">
+              {displayTotalVolume.toLocaleString()}<span className="text-lg font-bold text-gray-600">/mês</span>
+            </p>
+            <p className="text-xs text-gray-500">
+              {displayKeywordCount} palavras-chave relacionadas a "{niche}"
+            </p>
           </div>
         </div>
+      </div>
+
+      {/* Keywords Table Card */}
+      <Card className="overflow-hidden bg-white border border-gray-200 shadow-lg rounded-lg">
         
         {/* Keywords section */}
         <div className="border-t border-gray-200"></div>
