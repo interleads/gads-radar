@@ -213,17 +213,13 @@ serve(async (req) => {
     
     console.log('Primary keyword volume from search_volume:', primaryVolume);
 
-    // Combinar os dados
-    const dfsData = {
-      ...keywordsData,
-      primary_keyword_volume: primaryVolume,
-      primary_keyword_data: primaryKeywordResult
-    };
-
+    // Retornar com primary_keyword_volume no nível raiz para fácil acesso
     return new Response(JSON.stringify({ 
       success: true,
       corrected_niche: melhor_nicho,
-      data: dfsData 
+      primary_keyword_volume: primaryVolume,
+      primary_keyword_data: primaryKeywordResult,
+      data: keywordsData 
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200
