@@ -2,3 +2,6 @@ project_id = "xgetkakvkywcgpiovglp"
 
 [functions.search-volume]
 verify_jwt = false
+
+[functions.sync-locations]
+verify_jwt = false
