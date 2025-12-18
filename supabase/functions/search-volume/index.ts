@@ -35,6 +35,34 @@ function getSimilarity(str1: string, str2: string) {
   return (2.0 * hit_count) / union;
 }
 
+// Função para encontrar a cidade mais similar
+function findBestCityMatch(cityName: string, availableCities: { name: string; dataforseo_id: number }[]): { city: { name: string; dataforseo_id: number } | null; score: number; suggestions: string[] } {
+  let bestMatch: { name: string; dataforseo_id: number } | null = null;
+  let bestScore = 0;
+  const suggestions: string[] = [];
+
+  for (const city of availableCities) {
+    const score = getSimilarity(cityName, city.name);
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = city;
+    }
+    // Collect top 5 suggestions for error message
+    if (score > 0.3) {
+      suggestions.push(city.name);
+    }
+  }
+
+  // Sort suggestions by relevance and take top 5
+  suggestions.sort((a, b) => getSimilarity(cityName, b) - getSimilarity(cityName, a));
+  
+  return { 
+    city: bestScore >= 0.6 ? bestMatch : null, // Only auto-correct if very similar
+    score: bestScore,
+    suggestions: suggestions.slice(0, 5)
+  };
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -67,34 +95,53 @@ serve(async (req) => {
     
     console.log('Niche correction:', { original: niche_query, corrected: melhor_nicho, score: maior_score });
 
-    // 2. BUSCAR ID DA CIDADE NO BANCO
-    // Tenta casar o nome da cidade. Ex: 'Natal'
-    const { data: cityData, error: dbError } = await supabaseClient
+    // 2. BUSCAR CIDADES DISPONÍVEIS NO BANCO
+    const { data: allCities, error: citiesError } = await supabaseClient
       .from('locations')
-      .select('dataforseo_id')
-      .ilike('name', city_name) // Busca Case Insensitive
-      .limit(1)
-      .single();
+      .select('name, dataforseo_id');
 
-    if (dbError || !cityData) {
-      console.error('City not found:', city_name, dbError);
-      // Fallback: Se não achar a cidade, retorna erro ou um ID padrão (opcional)
-      // Aqui vamos retornar erro para forçar o cadastro da cidade
-      return new Response(JSON.stringify({ error: `Cidade ${city_name} não encontrada na base.` }), {
+    if (citiesError || !allCities || allCities.length === 0) {
+      console.error('Error fetching cities:', citiesError);
+      return new Response(JSON.stringify({ error: 'Erro ao buscar cidades disponíveis.' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500
+      });
+    }
+
+    // 3. BUSCAR CIDADE COM FUZZY MATCH
+    const cityMatch = findBestCityMatch(city_name, allCities);
+    
+    console.log('City match result:', { 
+      searched: city_name, 
+      found: cityMatch.city?.name, 
+      score: cityMatch.score,
+      suggestions: cityMatch.suggestions 
+    });
+
+    if (!cityMatch.city) {
+      // Cidade não encontrada - retorna sugestões
+      const suggestionList = cityMatch.suggestions.length > 0 
+        ? cityMatch.suggestions.join(', ') 
+        : allCities.slice(0, 5).map(c => c.name).join(', ');
+      
+      return new Response(JSON.stringify({ 
+        error: `Cidade "${city_name}" não encontrada. Tente: ${suggestionList}` 
+      }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 404
-      })
+      });
     }
     
-    console.log('City found:', cityData);
+    const selectedCity = cityMatch.city;
+    console.log('City selected:', selectedCity);
 
-    // 3. CHAMAR DATAFORSEO API
+    // 4. CHAMAR DATAFORSEO API
     const login = Deno.env.get('DATAFORSEO_LOGIN');
     const password = Deno.env.get('DATAFORSEO_PASSWORD');
     const creds = btoa(`${login}:${password}`);
 
     const payload = [{
-      "location_code": cityData.dataforseo_id,
+      "location_code": selectedCity.dataforseo_id,
       "language_code": "pt",
       "keywords": [
         melhor_nicho,
