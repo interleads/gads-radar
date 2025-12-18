@@ -28,11 +28,8 @@ const Index: React.FC = () => {
     // setShowGoogleStyle(false);
 
     try {
-      // Converting location to CEP format for API
-      // In a real app, you would have a proper location to CEP conversion
-      // For now, we'll use location as CEP directly if it looks like one, or a default
-      const cep = location.replace(/\D/g, '').length === 8 ? location : '12345678';
-      const data = await fetchKeywordData(niche, cep);
+      // Pass the city name directly to the API
+      const data = await fetchKeywordData(niche, location);
       setPendingResults({
         keywordsData: data.keywords,
         regionGrade: data.regionGrade,
