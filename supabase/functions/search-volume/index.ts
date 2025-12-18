@@ -140,14 +140,20 @@ serve(async (req) => {
     const password = Deno.env.get('DATAFORSEO_PASSWORD');
     const creds = btoa(`${login}:${password}`);
 
-    // Calcular datas para o mês atual
+    // Calcular datas para o MÊS ANTERIOR (Google Ads não tem dados do mês corrente)
     const hoje = new Date();
-    const mesAtual = hoje.getMonth() + 1;
-    const anoAtual = hoje.getFullYear();
-    const ultimoDia = new Date(anoAtual, mesAtual, 0).getDate();
-    
-    const dateFrom = `${anoAtual}-${mesAtual.toString().padStart(2, '0')}-01`;
-    const dateTo = `${anoAtual}-${mesAtual.toString().padStart(2, '0')}-${ultimoDia}`;
+    let mesAnterior = hoje.getMonth(); // getMonth() retorna 0-11, então sem +1 já é o mês anterior
+    let anoReferencia = hoje.getFullYear();
+
+    // Se estivermos em janeiro (getMonth() = 0), o mês anterior é dezembro do ano passado
+    if (mesAnterior === 0) {
+      mesAnterior = 12;
+      anoReferencia -= 1;
+    }
+
+    const ultimoDia = new Date(anoReferencia, mesAnterior, 0).getDate();
+    const dateFrom = `${anoReferencia}-${mesAnterior.toString().padStart(2, '0')}-01`;
+    const dateTo = `${anoReferencia}-${mesAnterior.toString().padStart(2, '0')}-${ultimoDia}`;
 
     console.log('Date range:', { dateFrom, dateTo });
 
