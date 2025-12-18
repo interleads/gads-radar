@@ -135,37 +135,84 @@ serve(async (req) => {
     const selectedCity = cityMatch.city;
     console.log('City selected:', selectedCity);
 
-    // 4. CHAMAR DATAFORSEO API - USANDO keywords_for_keywords PARA OBTER KEYWORDS RELACIONADAS
+    // 4. CHAMAR DATAFORSEO API - USANDO search_volume PARA VOLUME PRECISO
     const login = Deno.env.get('DATAFORSEO_LOGIN');
     const password = Deno.env.get('DATAFORSEO_PASSWORD');
     const creds = btoa(`${login}:${password}`);
 
-    // Novo payload para o endpoint keywords_for_keywords
-    const payload = [{
+    // Calcular datas para o mês atual
+    const hoje = new Date();
+    const mesAtual = hoje.getMonth() + 1;
+    const anoAtual = hoje.getFullYear();
+    const ultimoDia = new Date(anoAtual, mesAtual, 0).getDate();
+    
+    const dateFrom = `${anoAtual}-${mesAtual.toString().padStart(2, '0')}-01`;
+    const dateTo = `${anoAtual}-${mesAtual.toString().padStart(2, '0')}-${ultimoDia}`;
+
+    console.log('Date range:', { dateFrom, dateTo });
+
+    // Payload para search_volume/live (volume preciso)
+    const searchVolumePayload = [{
       "location_code": selectedCity.dataforseo_id,
       "language_code": "pt",
-      "keywords": [melhor_nicho], // Apenas a keyword principal
-      "include_seed_keyword": true,
-      "sort_by": "search_volume",
-      "limit": 50 // Limitar para performance
+      "keywords": [melhor_nicho],
+      "date_from": dateFrom,
+      "date_to": dateTo,
+      "sort_by": "relevance"
     }];
     
-    console.log('DataForSEO payload:', JSON.stringify(payload));
+    console.log('DataForSEO search_volume payload:', JSON.stringify(searchVolumePayload));
 
-    // Endpoint correto: keywords_for_keywords retorna a keyword principal + relacionadas
-    const dfsResponse = await fetch('https://api.dataforseo.com/v3/keywords_data/google_ads/keywords_for_keywords/live', {
+    // 1ª chamada: search_volume/live para volume preciso da keyword principal
+    const searchVolumeResponse = await fetch('https://api.dataforseo.com/v3/keywords_data/google_ads/search_volume/live', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${creds}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(searchVolumePayload)
     });
 
-    const dfsData = await dfsResponse.json();
+    const searchVolumeData = await searchVolumeResponse.json();
     
-    console.log('DataForSEO response status:', dfsResponse.status);
-    console.log('DataForSEO response:', JSON.stringify(dfsData).substring(0, 500));
+    console.log('DataForSEO search_volume response status:', searchVolumeResponse.status);
+    console.log('DataForSEO search_volume response:', JSON.stringify(searchVolumeData).substring(0, 1000));
+
+    // 2ª chamada: keywords_for_keywords para keywords relacionadas
+    const keywordsPayload = [{
+      "location_code": selectedCity.dataforseo_id,
+      "language_code": "pt",
+      "keywords": [melhor_nicho],
+      "include_seed_keyword": true,
+      "sort_by": "search_volume",
+      "limit": 50
+    }];
+
+    const keywordsResponse = await fetch('https://api.dataforseo.com/v3/keywords_data/google_ads/keywords_for_keywords/live', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${creds}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(keywordsPayload)
+    });
+
+    const keywordsData = await keywordsResponse.json();
+    
+    console.log('DataForSEO keywords_for_keywords response status:', keywordsResponse.status);
+
+    // Extrair volume preciso da keyword principal
+    const primaryKeywordResult = searchVolumeData?.tasks?.[0]?.result?.[0];
+    const primaryVolume = primaryKeywordResult?.search_volume || 0;
+    
+    console.log('Primary keyword volume from search_volume:', primaryVolume);
+
+    // Combinar os dados
+    const dfsData = {
+      ...keywordsData,
+      primary_keyword_volume: primaryVolume,
+      primary_keyword_data: primaryKeywordResult
+    };
 
     return new Response(JSON.stringify({ 
       success: true,

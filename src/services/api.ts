@@ -45,22 +45,21 @@ export const fetchKeywordData = async (niche: string, locationName: string): Pro
     throw new Error('Sem dados suficientes para esta análise.');
   }
 
-  // Formatar os dados do novo endpoint (keywords_for_keywords)
-  const rawResults: DataForSeoKeywordResult[] = functionResponse.data.tasks[0].result;
+  // Volume preciso da keyword principal (do endpoint search_volume/live)
+  const primaryKeywordVolume = functionResponse.data.primary_keyword_volume || 0;
+  const primaryKeywordData = functionResponse.data.primary_keyword_data;
+  
+  console.log('Primary keyword volume (from search_volume):', primaryKeywordVolume);
+  console.log('Primary keyword data:', primaryKeywordData);
+
+  // Formatar os dados das keywords relacionadas (keywords_for_keywords)
+  const rawResults: DataForSeoKeywordResult[] = functionResponse.data.tasks[0].result || [];
   
   console.log('Raw results count:', rawResults.length);
   console.log('Sample result:', rawResults[0]);
 
   // A keyword corrigida pelo backend
   const correctedNiche = functionResponse.corrected_niche?.toLowerCase() || niche.toLowerCase();
-  
-  // Encontrar a keyword principal (seed keyword)
-  const primaryKeyword = rawResults.find(
-    item => item.keyword?.toLowerCase() === correctedNiche
-  );
-  
-  const primaryKeywordVolume = primaryKeyword?.search_volume || 0;
-  console.log('Primary keyword volume:', primaryKeywordVolume);
 
   // Mapear todas as keywords
   const keywords: KeywordData[] = rawResults
