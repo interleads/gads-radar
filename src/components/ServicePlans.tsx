@@ -13,9 +13,10 @@ const ServicePlans: React.FC = () => {
     name: 'Avançado',
     price: 'R$ 997',
     period: '/mês',
-    description: 'Perfeito para empresas em crescimento',
+    description: 'O pacote ideal para dominar seu mercado local e superar concorrentes.',
     features: ['Gestão de até 150 palavras-chave', 'Configuração de campanhas múltiplas', 'Relatórios semanais de desempenho', 'Otimização semanal de anúncios', 'Remarketing e públicos personalizados', 'Suporte por e-mail e telefone'],
-    isPopular: true
+    isPopular: true,
+    buttonText: 'QUERO DOMINAR MEU MERCADO'
   }, {
     name: 'Profissional',
     price: 'R$ 1.497',
@@ -54,7 +55,7 @@ const ServicePlans: React.FC = () => {
                     </li>)}
                 </ul>
                 <Button onClick={handleContactClick} variant={plan.isPopular ? "default" : "outline"} className={`w-full ${plan.isPopular ? 'bg-brand-blue hover:bg-brand-blue-700' : 'border-brand-blue text-brand-blue hover:bg-brand-blue-50'}`}>
-                  Falar com especialista
+                  {plan.buttonText || 'Falar com especialista'}
                 </Button>
               </div>
             </div>)}
