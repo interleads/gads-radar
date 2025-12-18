@@ -1,9 +1,10 @@
 import React from 'react';
-import { User, Mail, Phone, Database, X } from 'lucide-react';
+import { User, Mail, Phone, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+
 interface LeadCaptureDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,16 +13,23 @@ interface LeadCaptureDialogProps {
     email: string;
     phone: string;
   }) => void;
+  isLoading?: boolean;
+  hasData?: boolean;
 }
+
 const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
   isOpen,
   onClose,
-  onSubmit
+  onSubmit,
+  isLoading = false,
+  hasData = false
 }) => {
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [errors, setErrors] = React.useState<Record<string, string>>({});
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
+
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!name.trim()) {
@@ -35,47 +43,34 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
     if (!phone.trim()) {
       newErrors.phone = 'Telefone é obrigatório';
     } else if (!/^\(\d{2}\) \d{4,5}-\d{4}$/.test(phone)) {
-      newErrors.phone = 'Telefone inválido (formato: (99) 9999-9999 ou (99) 99999-9999)';
+      newErrors.phone = 'Telefone inválido';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      onSubmit({
-        name,
-        email,
-        phone
-      });
+      setIsSubmitted(true);
+      onSubmit({ name, email, phone });
     }
   };
+
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length <= 11) {
-      // Format the phone number with DDD
       if (value.length > 2) {
         value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
       }
-
-      // Handle phone number formatting with hyphen
       if (value.length > 9) {
-        // Get the part after DDD and space: "(XX) "
         const afterDDD = value.slice(5);
-
-        // Format based on length - 8 or 9 digits after DDD
         if (afterDDD.length > 4) {
-          // For 9-digit numbers: (XX) 9XXXX-XXXX
           if (afterDDD.length === 9) {
             value = `${value.slice(0, 10)}-${value.slice(10)}`;
-          }
-          // For 8-digit numbers: (XX) XXXX-XXXX
-          else if (afterDDD.length === 8) {
+          } else if (afterDDD.length === 8) {
             value = `${value.slice(0, 9)}-${value.slice(9)}`;
-          }
-          // For incomplete numbers with more than 4 digits
-          else if (afterDDD.length > 4) {
-            // Determine the position of the hyphen based on the expected total length
+          } else if (afterDDD.length > 4) {
             const baseLength = value.length > 13 ? 10 : 9;
             value = `${value.slice(0, baseLength)}-${value.slice(baseLength)}`;
           }
@@ -84,54 +79,102 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
       setPhone(value);
     }
   };
-  return <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-brand-gray-700 to-brand-white-500 border-none text-white">
-        <DialogHeader className="space-y-4">
-          <div className="mx-auto p-3 rounded-full bg-white/20 backdrop-blur-sm">
-            <Database className="w-8 h-8 text-white" />
+
+  // Tela de loading quando dados ainda não chegaram
+  const showLoadingScreen = isSubmitted && (isLoading || !hasData);
+
+  if (showLoadingScreen) {
+    return (
+      <Dialog open={isOpen} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-sm bg-background border border-border shadow-lg" hideCloseButton>
+          <div className="flex flex-col items-center justify-center py-12 space-y-6">
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full border-4 border-muted animate-pulse" />
+              <Loader2 className="w-8 h-8 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin" />
+            </div>
+            <div className="text-center space-y-2">
+              <p className="text-lg font-medium text-foreground">Carregando informações...</p>
+              <p className="text-sm text-muted-foreground">Aguarde enquanto processamos sua análise</p>
+            </div>
           </div>
-          <DialogTitle className="text-center text-xl font-medium">
-            Para acessar o relatório, informe os dados abaixo
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={() => onClose()}>
+      <DialogContent className="sm:max-w-sm bg-background border border-border shadow-lg">
+        <DialogHeader className="space-y-3 pb-2">
+          <DialogTitle className="text-center text-lg font-semibold text-foreground">
+            Acesse seu relatório
           </DialogTitle>
+          <p className="text-center text-sm text-muted-foreground">
+            Preencha os dados para visualizar a análise
+          </p>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-5 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-white/90 font-medium">Nome</Label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="name" className="text-sm font-medium text-foreground">Nome</Label>
             <div className="relative">
-              <User className="absolute left-3 top-2.5 h-5 w-5 text-white/70" />
-              <Input id="name" placeholder="Seu nome completo" value={name} onChange={e => setName(e.target.value)} className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-white/30 focus-visible:border-white/30" />
-              {errors.name && <span className="text-sm text-red-300 mt-1 block">{errors.name}</span>}
+              <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input 
+                id="name" 
+                placeholder="Seu nome" 
+                value={name} 
+                onChange={e => setName(e.target.value)} 
+                className="pl-9 h-10 bg-background border-input focus-visible:ring-1 focus-visible:ring-ring" 
+              />
             </div>
+            {errors.name && <span className="text-xs text-destructive">{errors.name}</span>}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-white/90 font-medium">E-mail</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-sm font-medium text-foreground">E-mail</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-2.5 h-5 w-5 text-white/70" />
-              <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={e => setEmail(e.target.value)} className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-white/30 focus-visible:border-white/30" />
-              {errors.email && <span className="text-sm text-red-300 mt-1 block">{errors.email}</span>}
+              <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input 
+                id="email" 
+                type="email" 
+                placeholder="seu@email.com" 
+                value={email} 
+                onChange={e => setEmail(e.target.value)} 
+                className="pl-9 h-10 bg-background border-input focus-visible:ring-1 focus-visible:ring-ring" 
+              />
             </div>
+            {errors.email && <span className="text-xs text-destructive">{errors.email}</span>}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone" className="text-white/90 font-medium">Telefone</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="phone" className="text-sm font-medium text-foreground">Telefone</Label>
             <div className="relative">
-              <Phone className="absolute left-3 top-2.5 h-5 w-5 text-white/70" />
-              <Input id="phone" placeholder="(99) 99999-9999" value={phone} onChange={handlePhoneChange} className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-white/30 focus-visible:border-white/30" />
-              {errors.phone && <span className="text-sm text-red-300 mt-1 block">{errors.phone}</span>}
+              <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input 
+                id="phone" 
+                placeholder="(99) 99999-9999" 
+                value={phone} 
+                onChange={handlePhoneChange} 
+                className="pl-9 h-10 bg-background border-input focus-visible:ring-1 focus-visible:ring-ring" 
+              />
             </div>
+            {errors.phone && <span className="text-xs text-destructive">{errors.phone}</span>}
           </div>
 
-          <Button type="submit" className="w-full bg-brand-green hover:bg-brand-green-600 text-white font-medium py-5 h-auto">
-            Ver resultados agora
+          <Button 
+            type="submit" 
+            className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+          >
+            Ver resultados
           </Button>
 
-          <p className="text-center text-sm text-white/70">
-            🔒 Seus dados estão protegidos. Não fazemos spam.
+          <p className="text-center text-xs text-muted-foreground pt-1">
+            Seus dados estão protegidos
           </p>
         </form>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
+
 export default LeadCaptureDialog;

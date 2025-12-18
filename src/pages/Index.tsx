@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 import GoogleStyleHomepage from '@/components/GoogleStyleHomepage';
@@ -8,6 +8,8 @@ import SkeletonLoader from '@/components/SkeletonLoader';
 import LeadCaptureDialog from '@/components/LeadCaptureDialog';
 import AuthoritySection from '@/components/AuthoritySection';
 import { fetchKeywordData } from '@/services/api';
+import { supabase } from '@/integrations/supabase/client';
+
 const Index: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchPerformed, setSearchPerformed] = useState(false);
@@ -23,27 +25,20 @@ const Index: React.FC = () => {
     keywordCount: number;
   } | null>(null);
   const [results, setResults] = useState<typeof pendingResults>(null);
-  // Removemos a alternância da interface, mantendo sempre o GoogleStyleHomepage
   const [showGoogleStyle, setShowGoogleStyle] = useState(true);
+
   const handleSearch = async (niche: string, location: string) => {
     setIsLoading(true);
-    // Mostrar popup de lead imediatamente enquanto busca dados
-    setShowLeadCapture(true);
     
-    // Resetar completamente os resultados pendentes para evitar dados antigos
-    setPendingResults({
-      keywordsData: [],
-      regionGrade: 'B' as const,
-      location,
-      niche,
-      regionName: location,
-      primaryKeywordVolume: 0,
-      totalVolume: 0,
-      keywordCount: 0
-    });
+    // Resetar resultados pendentes
+    setPendingResults(null);
+
+    // Delay de 2 segundos antes de abrir o popup
+    setTimeout(() => {
+      setShowLeadCapture(true);
+    }, 2000);
 
     try {
-      // Pass the city name directly to the API
       const data = await fetchKeywordData(niche, location);
       setPendingResults({
         keywordsData: data.keywords,
@@ -63,14 +58,35 @@ const Index: React.FC = () => {
       setIsLoading(false);
     }
   };
-  const handleLeadCapture = (data: {
+
+  const handleLeadCapture = async (data: {
     name: string;
     email: string;
     phone: string;
   }) => {
-    console.log('Lead captured:', data);
-    toast.success('Dados salvos com sucesso!');
+    try {
+      // Salvar lead no Supabase
+      const { error } = await supabase
+        .from('leads')
+        .insert({
+          name: data.name,
+          email: data.email,
+          phone: data.phone
+        });
+
+      if (error) {
+        console.error('Erro ao salvar lead:', error);
+        toast.error('Erro ao salvar dados. Tente novamente.');
+        return;
+      }
+
+      toast.success('Dados salvos com sucesso!');
+    } catch (err) {
+      console.error('Erro inesperado:', err);
+    }
+
     setShowLeadCapture(false);
+    
     if (pendingResults) {
       setResults(pendingResults);
       setSearchPerformed(true);
@@ -81,6 +97,14 @@ const Index: React.FC = () => {
       }, 100);
     }
   };
+
+  // Efeito para fechar popup automaticamente quando dados chegarem após submit
+  useEffect(() => {
+    if (pendingResults && !isLoading && results) {
+      setShowLeadCapture(false);
+    }
+  }, [pendingResults, isLoading, results]);
+
   const getRegionMessage = (grade: 'A' | 'B' | 'C' | 'D', regionName: string, niche: string) => {
     switch (grade) {
       case 'A':
@@ -95,38 +119,53 @@ const Index: React.FC = () => {
         return '';
     }
   };
-  return <div className="min-h-screen flex flex-col bg-background">
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
       <main className="flex-grow">
-        {/* Mantemos sempre a interface Google */}
         <GoogleStyleHomepage onSearch={handleSearch} isLoading={isLoading} />
         
-        <LeadCaptureDialog isOpen={showLeadCapture} onClose={() => setShowLeadCapture(false)} onSubmit={handleLeadCapture} />
+        <LeadCaptureDialog 
+          isOpen={showLeadCapture} 
+          onClose={() => setShowLeadCapture(false)} 
+          onSubmit={handleLeadCapture}
+          isLoading={isLoading}
+          hasData={pendingResults !== null && pendingResults.keywordsData.length > 0}
+        />
         
-        {searchPerformed && <section id="results" className="py-16">
+        {searchPerformed && (
+          <section id="results" className="py-16">
             <div className="container">
               <h2 className="text-2xl font-bold text-center mb-8">Resultados da Análise</h2>
               
-              {isLoading ? <SkeletonLoader /> : results && <ResultsCard 
-                regionGrade={{
-                  grade: results.regionGrade,
-                  message: getRegionMessage(results.regionGrade, results.regionName, results.niche)
-                }} 
-                location={results.location} 
-                niche={results.niche} 
-                keywordsData={results.keywordsData}
-                primaryKeywordVolume={results.primaryKeywordVolume}
-                totalVolume={results.totalVolume}
-                keywordCount={results.keywordCount}
-              />}
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : results && (
+                <ResultsCard 
+                  regionGrade={{
+                    grade: results.regionGrade,
+                    message: getRegionMessage(results.regionGrade, results.regionName, results.niche)
+                  }} 
+                  location={results.location} 
+                  niche={results.niche} 
+                  keywordsData={results.keywordsData}
+                  primaryKeywordVolume={results.primaryKeywordVolume}
+                  totalVolume={results.totalVolume}
+                  keywordCount={results.keywordCount}
+                />
+              )}
             </div>
-          </section>}
+          </section>
+        )}
         
-        {searchPerformed && !isLoading && <>
+        {searchPerformed && !isLoading && (
+          <>
             <AuthoritySection />
             <ServicePlans />
-          </>}
+          </>
+        )}
       </main>
       
       <footer className="bg-brand-blue-900 text-white py-8">
@@ -144,6 +183,8 @@ const Index: React.FC = () => {
           </div>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
