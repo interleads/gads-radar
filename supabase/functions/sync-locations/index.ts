@@ -7,31 +7,31 @@ const corsHeaders = {
 }
 
 // Mapeamento manual das cidades principais do Brasil
-// Baseado na lista oficial: https://api.dataforseo.com/v3/keywords_data/google_ads/locations/br
+// Baseado no arquivo CSV oficial do DataForSEO (locations_kwrd_2025_08_05.csv)
 const CITY_MAPPING: Record<string, number> = {
   'Maceió': 1001506,
   'Manaus': 1001511,
   'Salvador': 1001533,
-  'Fortaleza': 1001556,
-  'Brasília': 1001563,
-  'Vitória': 1001568,
-  'Goiânia': 1001574,
-  'São Luís': 1001584,
-  'Belo Horizonte': 1001596,
-  'Campo Grande': 1001612,
-  'Cuiabá': 1001621,
-  'Belém': 1001631,
-  'João Pessoa': 1001634,
-  'Curitiba': 1001640,
-  'Recife': 1001643,
-  'Teresina': 1001648,
+  'Fortaleza': 1001538,
+  'Brasília': 1001541,
+  'Vitória': 1001549,
+  'Goiânia': 1001552,
+  'São Luís': 1001561,
+  'Belo Horizonte': 1001566,
+  'Campo Grande': 1001593,
+  'Cuiabá': 1001602,
+  'Belém': 1001610,
+  'João Pessoa': 1001622,
+  'Recife': 1001625,
+  'Teresina': 1001629,
+  'Curitiba': 1001634,
   'Rio de Janeiro': 1001655,
   'Natal': 1001662,
-  'Porto Alegre': 1001674,
-  'Florianópolis': 1001688,
-  'Aracaju': 1001695,
+  'Porto Alegre': 1001686,
+  'Florianópolis': 1001706,
+  'Aracaju': 1001715,
+  'Campinas': 1001729,
   'São Paulo': 1001773,
-  'Campinas': 1001764,
 };
 
 serve(async (req) => {
