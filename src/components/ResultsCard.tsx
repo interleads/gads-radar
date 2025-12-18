@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { TrendingUp, Target } from 'lucide-react';
+import { TrendingUp, Target, Lock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export interface KeywordData {
@@ -111,7 +111,8 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {keywordsData.map((keyword, index) => (
+                {/* First 5 rows - visible */}
+                {keywordsData.slice(0, 5).map((keyword, index) => (
                   <TableRow 
                     key={index} 
                     className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} ${index === 0 ? "border-l-4 border-l-teal-500" : ""}`}
@@ -135,6 +136,58 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
                 ))}
               </TableBody>
             </Table>
+            
+            {/* Blurred section with remaining rows */}
+            {keywordsData.length > 5 && (
+              <div className="relative">
+                {/* Blurred table rows */}
+                <div className="blur-sm select-none pointer-events-none">
+                  <Table>
+                    <TableBody>
+                      {keywordsData.slice(5, 12).map((keyword, index) => (
+                        <TableRow 
+                          key={index} 
+                          className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+                        >
+                          <TableCell className="font-medium text-gray-700">
+                            {keyword.keyword}
+                          </TableCell>
+                          <TableCell className="text-right text-gray-700 font-semibold">
+                            {keyword.searchVolume.toLocaleString()}
+                          </TableCell>
+                          <TableCell className="text-right text-gray-700">
+                            {keyword.cpc.toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Badge className={`px-3 py-1 ${competitionColor[keyword.competition]}`}>
+                              {keyword.competition}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                
+                {/* Frosted glass overlay */}
+                <div className="absolute inset-0 bg-white/70 backdrop-blur-sm" />
+                
+                {/* Informational pop-up card */}
+                <div className="absolute inset-0 flex items-center justify-center p-4">
+                  <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-md text-center border border-gray-100">
+                    <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+                      <Lock className="w-6 h-6 text-amber-600" />
+                    </div>
+                    <h4 className="text-lg md:text-xl font-bold text-slate-800 mb-3">
+                      Amostra Gratuita: Você está vendo as top 5 de {displayKeywordCount} palavras-chave.
+                    </h4>
+                    <p className="text-sm md:text-base text-slate-500">
+                      Existem mais {displayKeywordCount - 5} oportunidades de busca e dados de concorrentes ocultos nesta lista.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
