@@ -47,17 +47,15 @@ function findBestCityMatch(cityName: string, availableCities: { name: string; da
       bestScore = score;
       bestMatch = city;
     }
-    // Collect top 5 suggestions for error message
     if (score > 0.3) {
       suggestions.push(city.name);
     }
   }
 
-  // Sort suggestions by relevance and take top 5
   suggestions.sort((a, b) => getSimilarity(cityName, b) - getSimilarity(cityName, a));
   
   return { 
-    city: bestScore >= 0.6 ? bestMatch : null, // Only auto-correct if very similar
+    city: bestScore >= 0.6 ? bestMatch : null,
     score: bestScore,
     suggestions: suggestions.slice(0, 5)
   };
@@ -73,7 +71,7 @@ serve(async (req) => {
     
     console.log('Received request:', { niche_query, city_name, state_code });
 
-    // Config do Supabase Admin (para ler o banco)
+    // Config do Supabase Admin
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -90,7 +88,6 @@ serve(async (req) => {
         melhor_nicho = nicho;
       }
     });
-    // Se a similaridade for muito baixa, mantemos o original
     if (maior_score < 0.25) melhor_nicho = niche_query;
     
     console.log('Niche correction:', { original: niche_query, corrected: melhor_nicho, score: maior_score });
@@ -119,7 +116,6 @@ serve(async (req) => {
     });
 
     if (!cityMatch.city) {
-      // Cidade não encontrada - retorna sugestões
       const suggestionList = cityMatch.suggestions.length > 0 
         ? cityMatch.suggestions.join(', ') 
         : allCities.slice(0, 5).map(c => c.name).join(', ');
@@ -135,12 +131,51 @@ serve(async (req) => {
     const selectedCity = cityMatch.city;
     console.log('City selected:', selectedCity);
 
-    // 4. CHAMAR DATAFORSEO API - UMA ÚNICA CHAMADA (keywords_for_keywords inclui a seed keyword)
+    // 4. VERIFICAR CACHE ANTES DE CHAMAR API
+    const normalizedNiche = melhor_nicho.toLowerCase().trim();
+    const { data: cachedResult, error: cacheError } = await supabaseClient
+      .from('search_cache')
+      .select('*')
+      .eq('niche', normalizedNiche)
+      .eq('city_name', selectedCity.name)
+      .gt('expires_at', new Date().toISOString())
+      .maybeSingle();
+
+    if (cacheError) {
+      console.log('Cache lookup error (continuing without cache):', cacheError);
+    }
+
+    if (cachedResult) {
+      console.log('✅ CACHE HIT para:', normalizedNiche, selectedCity.name, '| Hits:', cachedResult.hit_count + 1);
+      
+      // Incrementar contador de hits (fire and forget)
+      supabaseClient
+        .from('search_cache')
+        .update({ hit_count: cachedResult.hit_count + 1 })
+        .eq('id', cachedResult.id)
+        .then(() => console.log('Hit count updated'));
+      
+      // Retornar dados do cache
+      return new Response(JSON.stringify({
+        success: true,
+        from_cache: true,
+        corrected_niche: melhor_nicho,
+        primary_keyword_volume: cachedResult.primary_keyword_volume,
+        primary_keyword_data: cachedResult.primary_keyword_data,
+        data: { tasks: [{ result: cachedResult.related_keywords }] }
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
+      });
+    }
+
+    console.log('❌ CACHE MISS - chamando API DataForSEO...');
+
+    // 5. CHAMAR DATAFORSEO API
     const login = Deno.env.get('DATAFORSEO_LOGIN');
     const password = Deno.env.get('DATAFORSEO_PASSWORD');
     const creds = btoa(`${login}:${password}`);
 
-    // Payload para keywords_for_keywords (já inclui a keyword principal com include_seed_keyword: true)
     const keywordsPayload = [{
       "location_code": selectedCity.dataforseo_id,
       "language_code": "pt",
@@ -168,7 +203,7 @@ serve(async (req) => {
     // Extrair resultados
     const results = keywordsData?.tasks?.[0]?.result || [];
     
-    // Encontrar a keyword principal (seed keyword) nos resultados
+    // Encontrar a keyword principal nos resultados
     const primaryKeyword = results.find((item: any) => 
       item.keyword?.toLowerCase() === melhor_nicho.toLowerCase()
     ) || results[0];
@@ -177,9 +212,35 @@ serve(async (req) => {
     
     console.log('Primary keyword from results:', primaryKeyword?.keyword, 'volume:', primaryVolume);
 
-    // Retornar dados completos incluindo monthly_searches para cálculo do total anual
+    // 6. SALVAR NO CACHE
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    
+    const { error: upsertError } = await supabaseClient
+      .from('search_cache')
+      .upsert({
+        niche: normalizedNiche,
+        city_name: selectedCity.name,
+        location_code: selectedCity.dataforseo_id,
+        primary_keyword_volume: primaryVolume,
+        primary_keyword_data: primaryKeyword,
+        related_keywords: results,
+        expires_at: expiresAt,
+        hit_count: 0
+      }, { 
+        onConflict: 'niche,city_name',
+        ignoreDuplicates: false 
+      });
+
+    if (upsertError) {
+      console.error('Cache save error:', upsertError);
+    } else {
+      console.log('✅ Cache saved for:', normalizedNiche, selectedCity.name, '| Expires:', expiresAt);
+    }
+
+    // Retornar dados
     return new Response(JSON.stringify({ 
       success: true,
+      from_cache: false,
       corrected_niche: melhor_nicho,
       primary_keyword_volume: primaryVolume,
       primary_keyword_data: primaryKeyword,

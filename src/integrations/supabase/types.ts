@@ -62,6 +62,45 @@ export type Database = {
         }
         Relationships: []
       }
+      search_cache: {
+        Row: {
+          city_name: string
+          created_at: string | null
+          expires_at: string | null
+          hit_count: number | null
+          id: string
+          location_code: number
+          niche: string
+          primary_keyword_data: Json | null
+          primary_keyword_volume: number | null
+          related_keywords: Json | null
+        }
+        Insert: {
+          city_name: string
+          created_at?: string | null
+          expires_at?: string | null
+          hit_count?: number | null
+          id?: string
+          location_code: number
+          niche: string
+          primary_keyword_data?: Json | null
+          primary_keyword_volume?: number | null
+          related_keywords?: Json | null
+        }
+        Update: {
+          city_name?: string
+          created_at?: string | null
+          expires_at?: string | null
+          hit_count?: number | null
+          id?: string
+          location_code?: number
+          niche?: string
+          primary_keyword_data?: Json | null
+          primary_keyword_volume?: number | null
+          related_keywords?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
