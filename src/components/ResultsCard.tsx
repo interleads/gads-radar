@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { AlertTriangle, Users, Search } from 'lucide-react';
+import { TrendingUp, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 export interface KeywordData {
@@ -40,53 +40,51 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
 
   return (
     <div className="animate-fade-in">
-      {/* Hero Alert Section - Urgência */}
-      <div className="bg-gradient-to-r from-red-100 via-orange-100 to-amber-50 border-l-4 border-red-500 p-6 md:p-8 rounded-lg shadow-lg mb-6">
+      {/* Professional Hero Section - Strategic Opportunity */}
+      <div className="bg-slate-900 p-6 md:p-10 rounded-xl shadow-2xl mb-6">
         {/* Main Headline */}
-        <div className="flex items-start gap-3 mb-4">
-          <AlertTriangle className="w-8 h-8 md:w-10 md:h-10 text-red-600 flex-shrink-0 mt-1" />
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-800 leading-tight">
-            Alerta: Sua empresa está invisível para{" "}
-            <span className="text-red-600 text-3xl md:text-4xl lg:text-5xl font-black">
-              {displayTotalVolume.toLocaleString()}
-            </span>{" "}
-            potenciais clientes este mês.
-          </h1>
-        </div>
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white leading-tight mb-4">
+          Análise de Mercado:{" "}
+          <span className="text-amber-400 text-3xl md:text-4xl lg:text-5xl font-black">
+            {displayTotalVolume.toLocaleString()}
+          </span>{" "}
+          potenciais clientes buscaram por seus serviços este mês e não te encontraram.
+        </h1>
 
         {/* Subheadline */}
-        <p className="text-base md:text-lg text-gray-700 mb-6 ml-0 md:ml-11">
-          Neste exato momento, milhares de pessoas estão pesquisando por{" "}
-          <strong className="text-gray-900">"{niche}"</strong> no Google em{" "}
-          <strong className="text-gray-900">{location}</strong>. 
-          Seus concorrentes estão aparecendo para elas, <strong className="text-red-700">mas você não</strong>.
+        <p className="text-base md:text-lg text-slate-300 mb-8">
+          A demanda por <strong className="text-white">"{niche}"</strong> em{" "}
+          <strong className="text-white">{location}</strong> é alta. 
+          Enquanto você lê isso, seus concorrentes estão capturando esses cliques e transformando buscas em vendas.
         </p>
 
-        {/* Visual Data Highlight */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 bg-white/80 backdrop-blur-sm p-4 md:p-6 rounded-lg border border-red-200 ml-0 md:ml-11">
-          <div className="flex items-center gap-2">
-            <div className="flex -space-x-3">
-              <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center border-2 border-white">
-                <Users className="w-5 h-5 text-white" />
-              </div>
-              <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center border-2 border-white">
-                <Users className="w-5 h-5 text-white" />
-              </div>
-              <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center border-2 border-white">
-                <Search className="w-5 h-5 text-white" />
-              </div>
+        {/* Data Insight Card */}
+        <div className="bg-white rounded-xl p-6 md:p-8 shadow-lg">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            {/* Icon */}
+            <div className="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-8 h-8 text-amber-600" />
             </div>
-          </div>
-          <div className="text-center sm:text-left">
-            <p className="text-sm text-gray-600 font-medium">
-              Volume Total de Buscas na sua Região
-            </p>
-            <p className="text-2xl md:text-3xl font-black text-red-600">
-              {displayTotalVolume.toLocaleString()}<span className="text-lg font-bold text-gray-600">/mês</span>
-            </p>
-            <p className="text-xs text-gray-500">
-              {displayKeywordCount} palavras-chave relacionadas a "{niche}"
-            </p>
+            
+            {/* Metrics */}
+            <div className="text-center sm:text-left flex-1">
+              <p className="text-sm text-slate-500 font-medium uppercase tracking-wide mb-1">
+                Volume Total de Oportunidades (Buscas/mês)
+              </p>
+              <p className="text-4xl md:text-5xl font-black text-amber-600 mb-2">
+                {displayTotalVolume.toLocaleString()}
+              </p>
+              <p className="text-sm text-slate-400">
+                Baseado em {displayKeywordCount} variações da palavra-chave "{niche}"
+              </p>
+            </div>
+
+            {/* Secondary Metric */}
+            <div className="hidden md:flex flex-col items-center bg-slate-50 rounded-lg p-4 border border-slate-200">
+              <Target className="w-6 h-6 text-slate-600 mb-2" />
+              <p className="text-2xl font-bold text-slate-800">{displayKeywordCount}</p>
+              <p className="text-xs text-slate-500">Keywords</p>
+            </div>
           </div>
         </div>
       </div>
