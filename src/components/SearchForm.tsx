@@ -1,41 +1,32 @@
-
 import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 interface SearchFormProps {
-  onSearch: (niche: string, cep: string) => void;
+  onSearch: (niche: string, location: string) => void;
   isLoading: boolean;
 }
 
 const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
   const [niche, setNiche] = useState('');
-  const [cep, setCep] = useState('');
+  const [city, setCity] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!niche.trim()) {
-      toast.error('Por favor, informe o nicho da sua empresa');
+      toast.error('Por favor, informe o nicho (ex: farmácia)');
       return;
     }
-    if (!cep || cep.replace(/\D/g, '').length !== 8) {
-      toast.error('Por favor, informe um CEP válido');
+    
+    if (!city.trim() || city.length < 3) {
+      toast.error('Por favor, informe a cidade (ex: Natal)');
       return;
     }
-    onSearch(niche, cep);
-  };
 
-  const handleCepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value.length > 8) {
-      value = value.substring(0, 8);
-    }
-    if (value.length > 5) {
-      value = value.substring(0, 5) + '-' + value.substring(5);
-    }
-    setCep(value);
+    onSearch(niche, city);
   };
 
   return (
@@ -46,14 +37,14 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
             Descubra o potencial de anúncios do seu negócio
           </h2>
           <p className="text-lg md:text-xl opacity-90 mb-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            Analise a concorrência e oportunidades no Google Ads para o seu nicho e região
+            Analise a concorrência e oportunidades no Google Ads para o seu nicho.
           </p>
           
           <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur p-4 md:p-6 rounded-xl shadow-lg animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
               <div className="md:col-span-4">
                 <label htmlFor="niche" className="block text-sm font-medium text-white/90 mb-1 text-left">
-                  Nicho da sua empresa
+                  Nicho / Segmento
                 </label>
                 <Input
                   id="niche"
@@ -64,17 +55,19 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
                 />
               </div>
               <div className="md:col-span-2">
-                <label htmlFor="cep" className="block text-sm font-medium text-white/90 mb-1 text-left">
-                  CEP de atuação
+                <label htmlFor="city" className="block text-sm font-medium text-white/90 mb-1 text-left">
+                  Cidade
                 </label>
-                <Input
-                  id="cep"
-                  placeholder="00000-000"
-                  className="bg-white/20 border-white/30 text-white placeholder:text-white/60"
-                  value={cep}
-                  onChange={handleCepChange}
-                  maxLength={9}
-                />
+                <div className="relative">
+                  <Input
+                    id="city"
+                    placeholder="Ex: Natal, São Paulo"
+                    className="bg-white/20 border-white/30 text-white placeholder:text-white/60 pl-9"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                  />
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
+                </div>
               </div>
               <div className="md:col-span-1 flex items-end">
                 <Button 
@@ -85,12 +78,11 @@ const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading }) => {
                   {isLoading ? (
                     <div className="flex items-center gap-2">
                       <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-                      <span>Buscando...</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <Search className="h-4 w-4" />
-                      <span>Consultar</span>
+                      <span>Ver</span>
                     </div>
                   )}
                 </Button>
