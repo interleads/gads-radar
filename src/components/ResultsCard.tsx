@@ -24,6 +24,7 @@ interface ResultsCardProps {
   primaryKeywordVolume: number;
   totalVolume: number;
   keywordCount: number;
+  annualVolume?: number;
 }
 
 const competitionColor = {
@@ -46,12 +47,14 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
   keywordsData,
   primaryKeywordVolume = 0,
   totalVolume = 0,
-  keywordCount = 0
+  keywordCount = 0,
+  annualVolume = 0
 }) => {
   // Fallback: se não tiver os novos valores, calcular do keywordsData
   const displayPrimaryVolume = primaryKeywordVolume || keywordsData[0]?.searchVolume || 0;
   const displayTotalVolume = totalVolume || keywordsData.reduce((sum, k) => sum + k.searchVolume, 0);
   const displayKeywordCount = keywordCount || keywordsData.length;
+  const displayAnnualVolume = annualVolume || displayPrimaryVolume * 12;
   return (
     <div className="animate-fade-in">
       <Card className="overflow-hidden bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -86,8 +89,8 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
               <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
                 <TrendingUp className="w-5 h-5 text-teal-600" />
                 <div>
-                  <span className="text-sm text-gray-500">Volume total</span>
-                  <p className="font-bold text-slate-800">{displayTotalVolume.toLocaleString()}</p>
+                  <span className="text-sm text-gray-500">Total anual (12 meses)</span>
+                  <p className="font-bold text-slate-800">{displayAnnualVolume.toLocaleString()}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">

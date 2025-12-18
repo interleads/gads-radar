@@ -23,6 +23,7 @@ const Index: React.FC = () => {
     primaryKeywordVolume: number;
     totalVolume: number;
     keywordCount: number;
+    annualVolume: number;
   } | null>(null);
   const [results, setResults] = useState<typeof pendingResults>(null);
   const [showGoogleStyle, setShowGoogleStyle] = useState(true);
@@ -48,7 +49,8 @@ const Index: React.FC = () => {
         regionName: data.regionName,
         primaryKeywordVolume: data.primaryKeywordVolume,
         totalVolume: data.totalVolume,
-        keywordCount: data.keywordCount
+        keywordCount: data.keywordCount,
+        annualVolume: data.annualVolume
       });
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
@@ -154,6 +156,7 @@ const Index: React.FC = () => {
                   primaryKeywordVolume={results.primaryKeywordVolume}
                   totalVolume={results.totalVolume}
                   keywordCount={results.keywordCount}
+                  annualVolume={results.annualVolume}
                 />
               )}
             </div>
