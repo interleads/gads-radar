@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { User, Mail, Phone, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,25 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
   const [phone, setPhone] = React.useState('');
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [formData, setFormData] = React.useState<{ name: string; email: string; phone: string } | null>(null);
+
+  // Quando dados chegam e form foi submetido, dispara onSubmit
+  useEffect(() => {
+    if (isSubmitted && hasData && !isLoading && formData) {
+      onSubmit(formData);
+      // Reset state
+      setIsSubmitted(false);
+      setFormData(null);
+    }
+  }, [isSubmitted, hasData, isLoading, formData, onSubmit]);
+
+  // Reset form quando dialog fecha
+  useEffect(() => {
+    if (!isOpen) {
+      setIsSubmitted(false);
+      setFormData(null);
+    }
+  }, [isOpen]);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -52,8 +71,17 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
+      const data = { name, email, phone };
+      setFormData(data);
       setIsSubmitted(true);
-      onSubmit({ name, email, phone });
+      
+      // Se dados já chegaram, dispara imediatamente
+      if (hasData && !isLoading) {
+        onSubmit(data);
+        setIsSubmitted(false);
+        setFormData(null);
+      }
+      // Senão, aguarda dados (o useEffect vai disparar quando chegarem)
     }
   };
 
