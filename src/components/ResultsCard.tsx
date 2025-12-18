@@ -44,10 +44,14 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
   location,
   niche,
   keywordsData,
-  primaryKeywordVolume,
-  totalVolume,
-  keywordCount
+  primaryKeywordVolume = 0,
+  totalVolume = 0,
+  keywordCount = 0
 }) => {
+  // Fallback: se não tiver os novos valores, calcular do keywordsData
+  const displayPrimaryVolume = primaryKeywordVolume || keywordsData[0]?.searchVolume || 0;
+  const displayTotalVolume = totalVolume || keywordsData.reduce((sum, k) => sum + k.searchVolume, 0);
+  const displayKeywordCount = keywordCount || keywordsData.length;
   return (
     <div className="animate-fade-in">
       <Card className="overflow-hidden bg-white border border-gray-200 shadow-lg rounded-lg">
@@ -73,7 +77,7 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
                 <span>Volume da keyword principal "{niche}"</span>
               </div>
               <h2 className="font-bold text-slate-800 text-4xl">
-                {primaryKeywordVolume.toLocaleString()} buscas/mês
+                {displayPrimaryVolume.toLocaleString()} buscas/mês
               </h2>
             </div>
 
@@ -83,14 +87,14 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
                 <TrendingUp className="w-5 h-5 text-teal-600" />
                 <div>
                   <span className="text-sm text-gray-500">Volume total</span>
-                  <p className="font-bold text-slate-800">{totalVolume.toLocaleString()}</p>
+                  <p className="font-bold text-slate-800">{displayTotalVolume.toLocaleString()}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
                 <Hash className="w-5 h-5 text-teal-600" />
                 <div>
                   <span className="text-sm text-gray-500">Keywords relacionadas</span>
-                  <p className="font-bold text-slate-800">{keywordCount}</p>
+                  <p className="font-bold text-slate-800">{displayKeywordCount}</p>
                 </div>
               </div>
             </div>
