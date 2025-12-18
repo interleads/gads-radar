@@ -45,9 +45,9 @@ export const fetchKeywordData = async (niche: string, locationName: string): Pro
     throw new Error('Sem dados suficientes para esta análise.');
   }
 
-  // Volume preciso da keyword principal (do endpoint search_volume/live)
-  const primaryKeywordVolume = functionResponse.data.primary_keyword_volume || 0;
-  const primaryKeywordData = functionResponse.data.primary_keyword_data;
+  // Volume preciso da keyword principal (agora no nível raiz da resposta)
+  const primaryKeywordVolume = functionResponse.primary_keyword_volume || 0;
+  const primaryKeywordData = functionResponse.primary_keyword_data;
   
   console.log('Primary keyword volume (from search_volume):', primaryKeywordVolume);
   console.log('Primary keyword data:', primaryKeywordData);
