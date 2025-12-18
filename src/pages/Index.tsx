@@ -27,8 +27,20 @@ const Index: React.FC = () => {
   const [showGoogleStyle, setShowGoogleStyle] = useState(true);
   const handleSearch = async (niche: string, location: string) => {
     setIsLoading(true);
-    // Removemos a linha que alterava a interface
-    // setShowGoogleStyle(false);
+    // Mostrar popup de lead imediatamente enquanto busca dados
+    setShowLeadCapture(true);
+    
+    // Armazenar niche e location para usar depois
+    setPendingResults(prev => prev ? { ...prev, niche, location, regionName: location } : {
+      keywordsData: [],
+      regionGrade: 'B' as const,
+      location,
+      niche,
+      regionName: location,
+      primaryKeywordVolume: 0,
+      totalVolume: 0,
+      keywordCount: 0
+    });
 
     try {
       // Pass the city name directly to the API
@@ -43,10 +55,10 @@ const Index: React.FC = () => {
         totalVolume: data.totalVolume,
         keywordCount: data.keywordCount
       });
-      setShowLeadCapture(true);
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
       toast.error('Ocorreu um erro ao consultar os dados. Por favor, tente novamente.');
+      setShowLeadCapture(false);
     } finally {
       setIsLoading(false);
     }
