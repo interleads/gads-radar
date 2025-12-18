@@ -1,1 +1,4 @@
 project_id = "xgetkakvkywcgpiovglp"
+
+[functions.search-volume]
+verify_jwt = false
