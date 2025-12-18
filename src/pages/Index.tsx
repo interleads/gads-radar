@@ -30,8 +30,8 @@ const Index: React.FC = () => {
     // Mostrar popup de lead imediatamente enquanto busca dados
     setShowLeadCapture(true);
     
-    // Armazenar niche e location para usar depois
-    setPendingResults(prev => prev ? { ...prev, niche, location, regionName: location } : {
+    // Resetar completamente os resultados pendentes para evitar dados antigos
+    setPendingResults({
       keywordsData: [],
       regionGrade: 'B' as const,
       location,

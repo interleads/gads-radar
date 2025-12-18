@@ -1,0 +1,1 @@
+UPDATE locations SET dataforseo_id = 1001625 WHERE name = 'Recife';
