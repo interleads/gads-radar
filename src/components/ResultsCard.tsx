@@ -84,19 +84,19 @@ const ResultsCard: React.FC<ResultsCardProps> = ({
               </h2>
             </div>
 
-            {/* Stats row */}
+            {/* Stats row - Total mensal destacado como o Google */}
             <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-teal-600" />
+              <div className="flex items-center gap-2 bg-teal-50 border border-teal-200 px-4 py-3 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-teal-600" />
                 <div>
-                  <span className="text-sm text-gray-500">Total anual (12 meses)</span>
-                  <p className="font-bold text-slate-800">{displayAnnualVolume.toLocaleString()}</p>
+                  <span className="text-sm text-teal-700 font-medium">Total mensal (todas keywords)</span>
+                  <p className="font-bold text-teal-800 text-xl">{displayTotalVolume.toLocaleString()}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
                 <Hash className="w-5 h-5 text-teal-600" />
                 <div>
-                  <span className="text-sm text-gray-500">Keywords relacionadas</span>
+                  <span className="text-sm text-gray-500">Keywords analisadas</span>
                   <p className="font-bold text-slate-800">{displayKeywordCount}</p>
                 </div>
               </div>
