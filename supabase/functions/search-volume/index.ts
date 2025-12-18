@@ -135,56 +135,12 @@ serve(async (req) => {
     const selectedCity = cityMatch.city;
     console.log('City selected:', selectedCity);
 
-    // 4. CHAMAR DATAFORSEO API - USANDO search_volume PARA VOLUME PRECISO
+    // 4. CHAMAR DATAFORSEO API - UMA ÚNICA CHAMADA (keywords_for_keywords inclui a seed keyword)
     const login = Deno.env.get('DATAFORSEO_LOGIN');
     const password = Deno.env.get('DATAFORSEO_PASSWORD');
     const creds = btoa(`${login}:${password}`);
 
-    // Calcular datas para o MÊS ANTERIOR (Google Ads não tem dados do mês corrente)
-    const hoje = new Date();
-    let mesAnterior = hoje.getMonth(); // getMonth() retorna 0-11, então sem +1 já é o mês anterior
-    let anoReferencia = hoje.getFullYear();
-
-    // Se estivermos em janeiro (getMonth() = 0), o mês anterior é dezembro do ano passado
-    if (mesAnterior === 0) {
-      mesAnterior = 12;
-      anoReferencia -= 1;
-    }
-
-    const ultimoDia = new Date(anoReferencia, mesAnterior, 0).getDate();
-    const dateFrom = `${anoReferencia}-${mesAnterior.toString().padStart(2, '0')}-01`;
-    const dateTo = `${anoReferencia}-${mesAnterior.toString().padStart(2, '0')}-${ultimoDia}`;
-
-    console.log('Date range:', { dateFrom, dateTo });
-
-    // Payload para search_volume/live (volume preciso)
-    const searchVolumePayload = [{
-      "location_code": selectedCity.dataforseo_id,
-      "language_code": "pt",
-      "keywords": [melhor_nicho],
-      "date_from": dateFrom,
-      "date_to": dateTo,
-      "sort_by": "relevance"
-    }];
-    
-    console.log('DataForSEO search_volume payload:', JSON.stringify(searchVolumePayload));
-
-    // 1ª chamada: search_volume/live para volume preciso da keyword principal
-    const searchVolumeResponse = await fetch('https://api.dataforseo.com/v3/keywords_data/google_ads/search_volume/live', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${creds}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(searchVolumePayload)
-    });
-
-    const searchVolumeData = await searchVolumeResponse.json();
-    
-    console.log('DataForSEO search_volume response status:', searchVolumeResponse.status);
-    console.log('DataForSEO search_volume response:', JSON.stringify(searchVolumeData).substring(0, 1000));
-
-    // 2ª chamada: keywords_for_keywords para keywords relacionadas
+    // Payload para keywords_for_keywords (já inclui a keyword principal com include_seed_keyword: true)
     const keywordsPayload = [{
       "location_code": selectedCity.dataforseo_id,
       "language_code": "pt",
@@ -193,6 +149,8 @@ serve(async (req) => {
       "sort_by": "search_volume",
       "limit": 50
     }];
+
+    console.log('DataForSEO keywords_for_keywords payload:', JSON.stringify(keywordsPayload));
 
     const keywordsResponse = await fetch('https://api.dataforseo.com/v3/keywords_data/google_ads/keywords_for_keywords/live', {
       method: 'POST',
@@ -207,18 +165,24 @@ serve(async (req) => {
     
     console.log('DataForSEO keywords_for_keywords response status:', keywordsResponse.status);
 
-    // Extrair volume preciso da keyword principal
-    const primaryKeywordResult = searchVolumeData?.tasks?.[0]?.result?.[0];
-    const primaryVolume = primaryKeywordResult?.search_volume || 0;
+    // Extrair resultados
+    const results = keywordsData?.tasks?.[0]?.result || [];
     
-    console.log('Primary keyword volume from search_volume:', primaryVolume);
+    // Encontrar a keyword principal (seed keyword) nos resultados
+    const primaryKeyword = results.find((item: any) => 
+      item.keyword?.toLowerCase() === melhor_nicho.toLowerCase()
+    ) || results[0];
 
-    // Retornar com primary_keyword_volume no nível raiz para fácil acesso
+    const primaryVolume = primaryKeyword?.search_volume || 0;
+    
+    console.log('Primary keyword from results:', primaryKeyword?.keyword, 'volume:', primaryVolume);
+
+    // Retornar dados completos incluindo monthly_searches para cálculo do total anual
     return new Response(JSON.stringify({ 
       success: true,
       corrected_niche: melhor_nicho,
       primary_keyword_volume: primaryVolume,
-      primary_keyword_data: primaryKeywordResult,
+      primary_keyword_data: primaryKeyword,
       data: keywordsData 
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

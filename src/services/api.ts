@@ -1,6 +1,15 @@
 import { KeywordData } from '@/components/ResultsCard';
 import { supabase } from '@/integrations/supabase/client';
 
+// Taxa de câmbio USD para BRL
+const USD_TO_BRL = 5.60;
+
+interface MonthlySearch {
+  year: number;
+  month: number;
+  search_volume: number;
+}
+
 interface DataForSeoKeywordResult {
   keyword: string;
   search_volume: number;
@@ -9,6 +18,7 @@ interface DataForSeoKeywordResult {
   competition_index: number;
   high_top_of_page_bid?: number;
   low_top_of_page_bid?: number;
+  monthly_searches?: MonthlySearch[];
 }
 
 export const fetchKeywordData = async (niche: string, locationName: string): Promise<{
@@ -18,6 +28,7 @@ export const fetchKeywordData = async (niche: string, locationName: string): Pro
   primaryKeywordVolume: number;
   totalVolume: number;
   keywordCount: number;
+  annualVolume: number;
 }> => {
   
   console.log(`Buscando dados para: ${niche} em ${locationName}`);
@@ -45,42 +56,49 @@ export const fetchKeywordData = async (niche: string, locationName: string): Pro
     throw new Error('Sem dados suficientes para esta análise.');
   }
 
-  // Volume preciso da keyword principal (agora no nível raiz da resposta)
+  // Volume da keyword principal
   const primaryKeywordVolume = functionResponse.primary_keyword_volume || 0;
   const primaryKeywordData = functionResponse.primary_keyword_data;
   
-  console.log('Primary keyword volume (from search_volume):', primaryKeywordVolume);
+  console.log('Primary keyword volume:', primaryKeywordVolume);
   console.log('Primary keyword data:', primaryKeywordData);
 
-  // Formatar os dados das keywords relacionadas (keywords_for_keywords)
+  // Calcular volume anual (soma dos 12 meses)
+  const monthlySearches: MonthlySearch[] = primaryKeywordData?.monthly_searches || [];
+  const annualVolume = monthlySearches.length > 0
+    ? monthlySearches.reduce((sum, month) => sum + (month.search_volume || 0), 0)
+    : primaryKeywordVolume * 12;
+
+  console.log('Annual volume (12 months total):', annualVolume);
+
+  // Formatar os dados das keywords relacionadas
   const rawResults: DataForSeoKeywordResult[] = functionResponse.data.tasks[0].result || [];
   
   console.log('Raw results count:', rawResults.length);
-  console.log('Sample result:', rawResults[0]);
 
   // A keyword corrigida pelo backend
   const correctedNiche = functionResponse.corrected_niche?.toLowerCase() || niche.toLowerCase();
 
-  // Mapear todas as keywords
+  // Mapear todas as keywords com conversão de CPC para BRL
   const keywords: KeywordData[] = rawResults
-    .filter(item => item.search_volume > 0) // Filtrar keywords com volume > 0
+    .filter(item => item.search_volume > 0)
     .map((item: DataForSeoKeywordResult) => ({
       keyword: item.keyword,
       searchVolume: item.search_volume || 0,
-      cpc: item.high_top_of_page_bid || item.cpc || 0, // Usar high_top_of_page_bid se disponível
+      cpc: (item.high_top_of_page_bid || item.cpc || 0) * USD_TO_BRL, // Converter para BRL
       competition: getCompetitionLevel(item.competition, item.competition_index)
     }));
 
   // Ordenar por volume de busca (maior primeiro)
   keywords.sort((a, b) => b.searchVolume - a.searchVolume);
 
-  // Calcular volume total
+  // Calcular volume total (soma de todas as keywords)
   const totalVolume = keywords.reduce((acc, curr) => acc + curr.searchVolume, 0);
   
   console.log('Total volume:', totalVolume);
   console.log('Keywords with volume:', keywords.length);
 
-  // Calcular grade baseado no volume da keyword PRINCIPAL (não no total)
+  // Calcular grade baseado no volume da keyword PRINCIPAL
   let regionGrade: 'A' | 'B' | 'C' | 'D' = 'D';
   
   if (primaryKeywordVolume >= 10000) regionGrade = 'A';
@@ -96,7 +114,8 @@ export const fetchKeywordData = async (niche: string, locationName: string): Pro
     regionName: locationName,
     primaryKeywordVolume,
     totalVolume,
-    keywordCount: keywords.length
+    keywordCount: keywords.length,
+    annualVolume
   };
 };
 
