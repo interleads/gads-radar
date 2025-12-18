@@ -1,0 +1,22 @@
+INSERT INTO locations (name, state, dataforseo_id, country_iso) VALUES 
+('São Paulo', 'SP', 1001772, 'BR'),
+('Rio de Janeiro', 'RJ', 1001771, 'BR'),
+('Belo Horizonte', 'MG', 1001646, 'BR'),
+('Recife', 'PE', 1001768, 'BR'),
+('Maceió', 'AL', 1001700, 'BR'),
+('Salvador', 'BA', 1001641, 'BR'),
+('Curitiba', 'PR', 1001657, 'BR'),
+('Porto Alegre', 'RS', 1001766, 'BR'),
+('Fortaleza', 'CE', 1001668, 'BR'),
+('Brasília', 'DF', 1001650, 'BR'),
+('Manaus', 'AM', 1001705, 'BR'),
+('Goiânia', 'GO', 1001673, 'BR'),
+('Campinas', 'SP', 1001651, 'BR'),
+('Florianópolis', 'SC', 1001667, 'BR'),
+('Vitória', 'ES', 1001790, 'BR'),
+('João Pessoa', 'PB', 1001688, 'BR'),
+('Aracaju', 'SE', 1001636, 'BR'),
+('Teresina', 'PI', 1001785, 'BR'),
+('Campo Grande', 'MS', 1001652, 'BR'),
+('Cuiabá', 'MT', 1001656, 'BR')
+ON CONFLICT DO NOTHING;
