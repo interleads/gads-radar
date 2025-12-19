@@ -126,7 +126,7 @@ const Index: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       
-      <main className="flex-grow">
+      <main className="flex-grow bg-slate-50">
         <GoogleStyleHomepage onSearch={handleSearch} isLoading={isLoading} />
         
         <LeadCaptureDialog 
@@ -138,9 +138,8 @@ const Index: React.FC = () => {
         />
         
         {searchPerformed && (
-          <section id="results" className="py-16">
-            <div className="container">
-              <h2 className="text-2xl font-bold text-center mb-8">Resultados da Análise</h2>
+          <section id="results" className="py-12 md:py-16">
+            <div className="container max-w-5xl mx-auto px-4">
               
               {isLoading ? (
                 <SkeletonLoader />

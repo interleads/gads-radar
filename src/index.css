@@ -116,6 +116,42 @@
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
   }
+
+  /* Navy gradient background */
+  .navy-gradient {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+  }
+
+  /* Tech grid overlay with central glow */
+  .tech-grid-bg {
+    position: relative;
+  }
+  
+  .tech-grid-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      radial-gradient(circle at 50% 40%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+    pointer-events: none;
+  }
+
+  /* Glass card effect */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Volume bar for keywords table */
+  .volume-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  }
 }
 
 @keyframes fadeIn {
