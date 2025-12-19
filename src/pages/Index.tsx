@@ -6,7 +6,9 @@ import ResultsCard, { KeywordData } from '@/components/ResultsCard';
 import ServicePlans from '@/components/ServicePlans';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import LeadCaptureDialog from '@/components/LeadCaptureDialog';
+import StartupSection from '@/components/StartupSection';
 import AuthoritySection from '@/components/AuthoritySection';
+import Footer from '@/components/Footer';
 import { fetchKeywordData } from '@/services/api';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -158,29 +160,20 @@ const Index: React.FC = () => {
           </section>
         )}
         
+        {/* StartupSection - DNA de Inovação IFRN */}
+        <StartupSection />
+        
+        {/* AuthoritySection - Big Numbers e Parceiros */}
+        <AuthoritySection />
+        
+        {/* ServicePlans - Oferta comercial (após busca) */}
         {searchPerformed && !isLoading && (
-          <>
-            <AuthoritySection />
-            <ServicePlans />
-          </>
+          <ServicePlans />
         )}
       </main>
       
-      <footer className="bg-brand-blue-900 text-white py-8">
-        <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <p className="font-semibold text-lg">INTERLEADS</p>
-              <p className="text-sm text-gray-300">© {new Date().getFullYear()} Todos os direitos reservados</p>
-            </div>
-            <div className="flex gap-6">
-              <a href="#" className="text-sm hover:text-brand-blue-300 transition-colors">Termos de uso</a>
-              <a href="#" className="text-sm hover:text-brand-blue-300 transition-colors">Política de privacidade</a>
-              <a href="#" className="text-sm hover:text-brand-blue-300 transition-colors">Contato</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer estruturado */}
+      <Footer />
     </div>
   );
 };
