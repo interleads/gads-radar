@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, MapPin } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { parseSearchQuery } from '@/lib/searchParser';
@@ -13,14 +13,11 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
   onSearch,
   isLoading
 }) => {
-  const [niche, setNiche] = useState('');
-  const [city, setCity] = useState('');
+  const [query, setQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Build query from separate fields
-    const query = city ? `${niche} em ${city}` : niche;
     const result = parseSearchQuery(query);
     
     if (!result.success) {
@@ -66,30 +63,18 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
         Digite seu serviço e sua cidade. Em 10 segundos, revelamos a demanda real que você não está aproveitando.
       </p>
       
-      {/* Unified Search Bar - Capsule Style */}
-      <div className="w-full max-w-3xl z-10">
+      {/* Single Search Bar */}
+      <div className="w-full max-w-2xl z-10">
         <form onSubmit={handleSubmit}>
-          <div className="bg-white rounded-full shadow-2xl flex flex-col md:flex-row items-stretch overflow-hidden">
-            {/* Niche Input */}
-            <div className="flex-1 flex items-center px-5 py-4 md:py-0 border-b md:border-b-0 md:border-r border-gray-200">
+          <div className="bg-white rounded-full shadow-2xl flex items-stretch overflow-hidden">
+            {/* Search Input */}
+            <div className="flex-1 flex items-center px-5 py-4">
               <Search className="text-gray-400 mr-3 flex-shrink-0" size={20} />
               <input
                 type="text"
-                placeholder="Nicho/Serviço (Ex: Advogado)"
-                value={niche}
-                onChange={(e) => setNiche(e.target.value)}
-                className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-base"
-              />
-            </div>
-            
-            {/* City Input */}
-            <div className="flex-1 flex items-center px-5 py-4 md:py-0 border-b md:border-b-0 md:border-r border-gray-200">
-              <MapPin className="text-gray-400 mr-3 flex-shrink-0" size={20} />
-              <input
-                type="text"
-                placeholder="Cidade (Ex: Curitiba)"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
+                placeholder="Ex: Advogado em Curitiba"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-base"
               />
             </div>
@@ -98,7 +83,7 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-base px-8 py-6 md:py-4 rounded-none md:rounded-r-full transition-colors"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-base px-8 py-6 md:py-4 rounded-none rounded-r-full transition-colors"
             >
               {isLoading ? 'Analisando...' : 'Analisar'}
             </Button>
