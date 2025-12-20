@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { parseSearchQuery } from '@/lib/searchParser';
+
+const PLACEHOLDER_EXAMPLES = [
+  "pizzaria em são paulo",
+  "advogado em curitiba",
+  "mecânico em recife",
+  "farmácia em salvador"
+];
 
 interface GoogleStyleHomepageProps {
   onSearch: (niche: string, location: string) => void;
@@ -14,6 +21,39 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
   isLoading
 }) => {
   const [query, setQuery] = useState('');
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [displayedPlaceholder, setDisplayedPlaceholder] = useState('');
+  const [isTyping, setIsTyping] = useState(true);
+
+  useEffect(() => {
+    if (query.length > 0) return;
+
+    const currentExample = PLACEHOLDER_EXAMPLES[placeholderIndex];
+    let timeout: NodeJS.Timeout;
+
+    if (isTyping) {
+      if (displayedPlaceholder.length < currentExample.length) {
+        timeout = setTimeout(() => {
+          setDisplayedPlaceholder(currentExample.slice(0, displayedPlaceholder.length + 1));
+        }, 80);
+      } else {
+        timeout = setTimeout(() => {
+          setIsTyping(false);
+        }, 2000);
+      }
+    } else {
+      if (displayedPlaceholder.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayedPlaceholder(displayedPlaceholder.slice(0, -1));
+        }, 40);
+      } else {
+        setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_EXAMPLES.length);
+        setIsTyping(true);
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayedPlaceholder, isTyping, placeholderIndex, query]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,15 +107,18 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
       <div className="w-full max-w-2xl z-10">
         <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
           {/* Search Input */}
-          <div className="w-full bg-white rounded-full shadow-2xl flex items-center px-5 py-4">
+          <div className="w-full bg-white rounded-full shadow-2xl flex items-center px-5 py-4 relative">
             <Search className="text-gray-400 mr-3 flex-shrink-0" size={20} />
             <input
               type="text"
-              placeholder="Ex: Advogado em Curitiba"
+              placeholder={query.length === 0 ? displayedPlaceholder : ''}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-base"
             />
+            {query.length === 0 && (
+              <span className="absolute left-12 text-gray-400 pointer-events-none animate-pulse">|</span>
+            )}
           </div>
           
           {/* Submit Button */}
