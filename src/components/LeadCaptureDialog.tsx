@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { User, Mail, Phone, Loader2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { User, Mail, Phone, Loader2, Lock, Sparkles } from 'lucide-react';
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -35,7 +35,6 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
   useEffect(() => {
     if (isSubmitted && hasData && !isLoading && formData) {
       onSubmit(formData);
-      // Reset state
       setIsSubmitted(false);
       setFormData(null);
     }
@@ -75,13 +74,11 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
       setFormData(data);
       setIsSubmitted(true);
       
-      // Se dados já chegaram, dispara imediatamente
       if (hasData && !isLoading) {
         onSubmit(data);
         setIsSubmitted(false);
         setFormData(null);
       }
-      // Senão, aguarda dados (o useEffect vai disparar quando chegarem)
     }
   };
 
@@ -114,15 +111,22 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
   if (showLoadingScreen) {
     return (
       <Dialog open={isOpen} onOpenChange={() => {}}>
-        <DialogContent className="sm:max-w-sm bg-background border border-border shadow-lg" hideCloseButton>
-          <div className="flex flex-col items-center justify-center py-12 space-y-6">
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full border-4 border-muted animate-pulse" />
-              <Loader2 className="w-8 h-8 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin" />
-            </div>
-            <div className="text-center space-y-2">
-              <p className="text-lg font-medium text-foreground">Carregando informações...</p>
-              <p className="text-sm text-muted-foreground">Aguarde enquanto processamos sua análise</p>
+        <DialogContent 
+          className="sm:max-w-sm border-0 shadow-2xl overflow-hidden p-0" 
+          hideCloseButton
+        >
+          <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
+            <div className="flex flex-col items-center justify-center py-8 space-y-6">
+              <div className="relative">
+                <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                  <Loader2 className="w-10 h-10 text-emerald-400 animate-spin" />
+                </div>
+                <div className="absolute inset-0 rounded-full bg-emerald-500/10 animate-ping" />
+              </div>
+              <div className="text-center space-y-2">
+                <p className="text-xl font-semibold text-white">Processando análise...</p>
+                <p className="text-sm text-slate-400">Aguarde um momento</p>
+              </div>
             </div>
           </div>
         </DialogContent>
@@ -132,74 +136,89 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-sm bg-background border border-border shadow-lg">
-        <DialogHeader className="space-y-3 pb-2">
-          <DialogTitle className="text-center text-lg font-semibold text-foreground">
-            Acesse seu relatório
-          </DialogTitle>
-          <p className="text-center text-sm text-muted-foreground">
-            Preencha os dados para visualizar a análise
-          </p>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="name" className="text-sm font-medium text-foreground">Nome</Label>
-            <div className="relative">
-              <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input 
-                id="name" 
-                placeholder="Seu nome" 
-                value={name} 
-                onChange={e => setName(e.target.value)} 
-                className="pl-9 h-10 bg-background border-input focus-visible:ring-1 focus-visible:ring-ring" 
-              />
+      <DialogContent className="sm:max-w-md border-0 shadow-2xl overflow-hidden p-0">
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 sm:p-8">
+          {/* Header */}
+          <div className="text-center space-y-3 mb-6">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500/20 mb-2">
+              <Sparkles className="w-7 h-7 text-emerald-400" />
             </div>
-            {errors.name && <span className="text-xs text-destructive">{errors.name}</span>}
+            <h2 className="text-2xl font-bold text-white">
+              Acesse seu relatório
+            </h2>
+            <p className="text-slate-400 text-sm">
+              Preencha os dados para visualizar a análise completa
+            </p>
           </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-sm font-medium text-foreground">E-mail</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="seu@email.com" 
-                value={email} 
-                onChange={e => setEmail(e.target.value)} 
-                className="pl-9 h-10 bg-background border-input focus-visible:ring-1 focus-visible:ring-ring" 
-              />
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="name" className="text-sm font-medium text-slate-300">
+                Nome
+              </Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <Input 
+                  id="name" 
+                  placeholder="Seu nome" 
+                  value={name} 
+                  onChange={e => setName(e.target.value)} 
+                  className="pl-10 h-12 bg-white/5 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 rounded-lg" 
+                />
+              </div>
+              {errors.name && <span className="text-xs text-red-400">{errors.name}</span>}
             </div>
-            {errors.email && <span className="text-xs text-destructive">{errors.email}</span>}
-          </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="phone" className="text-sm font-medium text-foreground">Telefone</Label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input 
-                id="phone" 
-                placeholder="(99) 99999-9999" 
-                value={phone} 
-                onChange={handlePhoneChange} 
-                className="pl-9 h-10 bg-background border-input focus-visible:ring-1 focus-visible:ring-ring" 
-              />
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm font-medium text-slate-300">
+                E-mail
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="seu@email.com" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  className="pl-10 h-12 bg-white/5 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 rounded-lg" 
+                />
+              </div>
+              {errors.email && <span className="text-xs text-red-400">{errors.email}</span>}
             </div>
-            {errors.phone && <span className="text-xs text-destructive">{errors.phone}</span>}
-          </div>
 
-          <Button 
-            type="submit" 
-            className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
-          >
-            Ver resultados
-          </Button>
+            <div className="space-y-1.5">
+              <Label htmlFor="phone" className="text-sm font-medium text-slate-300">
+                Telefone
+              </Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <Input 
+                  id="phone" 
+                  placeholder="(99) 99999-9999" 
+                  value={phone} 
+                  onChange={handlePhoneChange} 
+                  className="pl-10 h-12 bg-white/5 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 rounded-lg" 
+                />
+              </div>
+              {errors.phone && <span className="text-xs text-red-400">{errors.phone}</span>}
+            </div>
 
-          <p className="text-center text-xs text-muted-foreground pt-1">
-            Seus dados estão protegidos
-          </p>
-        </form>
+            <Button 
+              type="submit" 
+              className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-full shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-500/40 mt-2"
+            >
+              Ver resultados
+            </Button>
+
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <Lock className="w-3.5 h-3.5 text-slate-500" />
+              <p className="text-xs text-slate-500">
+                Seus dados estão protegidos
+              </p>
+            </div>
+          </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

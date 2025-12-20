@@ -160,20 +160,18 @@ const Index: React.FC = () => {
           </section>
         )}
         
-        {/* StartupSection - DNA de Inovação IFRN */}
-        <StartupSection />
-        
-        {/* AuthoritySection - Big Numbers e Parceiros */}
-        <AuthoritySection />
-        
-        {/* ServicePlans - Oferta comercial (após busca) */}
+        {/* Seções só aparecem após busca */}
         {searchPerformed && !isLoading && (
-          <ServicePlans />
+          <>
+            <StartupSection />
+            <AuthoritySection />
+            <ServicePlans />
+          </>
         )}
       </main>
       
-      {/* Footer estruturado */}
-      <Footer />
+      {/* Footer só aparece com resultados */}
+      {searchPerformed && <Footer />}
     </div>
   );
 };
