@@ -112,20 +112,20 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
     return (
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent 
-          className="sm:max-w-sm border-0 shadow-2xl overflow-hidden p-0" 
+          className="sm:max-w-sm border border-slate-200 shadow-2xl overflow-hidden p-0 bg-white" 
           hideCloseButton
         >
-          <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
+          <div className="p-8">
             <div className="flex flex-col items-center justify-center py-8 space-y-6">
               <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                  <Loader2 className="w-10 h-10 text-emerald-400 animate-spin" />
+                <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                  <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
                 </div>
-                <div className="absolute inset-0 rounded-full bg-emerald-500/10 animate-ping" />
+                <div className="absolute inset-0 rounded-full bg-emerald-500/5 animate-ping" />
               </div>
               <div className="text-center space-y-2">
-                <p className="text-xl font-semibold text-white">Processando análise...</p>
-                <p className="text-sm text-slate-400">Aguarde um momento</p>
+                <p className="text-xl font-semibold text-slate-800">Processando análise...</p>
+                <p className="text-sm text-slate-500">Aguarde um momento</p>
               </div>
             </div>
           </div>
@@ -136,72 +136,72 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-md border-0 shadow-2xl overflow-hidden p-0">
-        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 sm:p-8">
+      <DialogContent className="sm:max-w-md border border-slate-200 shadow-2xl overflow-hidden p-0 bg-white">
+        <div className="p-6 sm:p-8">
           {/* Header */}
           <div className="text-center space-y-3 mb-6">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500/20 mb-2">
-              <Sparkles className="w-7 h-7 text-emerald-400" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500/10 mb-2">
+              <Sparkles className="w-7 h-7 text-emerald-500" />
             </div>
-            <h2 className="text-2xl font-bold text-white">
+            <h2 className="text-2xl font-bold text-slate-800">
               Acesse seu relatório
             </h2>
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-500 text-sm">
               Preencha os dados para visualizar a análise completa
             </p>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-sm font-medium text-slate-300">
+              <Label htmlFor="name" className="text-sm font-medium text-slate-700">
                 Nome
               </Label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input 
                   id="name" 
                   placeholder="Seu nome" 
                   value={name} 
                   onChange={e => setName(e.target.value)} 
-                  className="pl-10 h-12 bg-white/5 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 rounded-lg" 
+                  className="pl-10 h-12 bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 rounded-lg" 
                 />
               </div>
-              {errors.name && <span className="text-xs text-red-400">{errors.name}</span>}
+              {errors.name && <span className="text-xs text-red-500">{errors.name}</span>}
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-sm font-medium text-slate-300">
+              <Label htmlFor="email" className="text-sm font-medium text-slate-700">
                 E-mail
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input 
                   id="email" 
                   type="email" 
                   placeholder="seu@email.com" 
                   value={email} 
                   onChange={e => setEmail(e.target.value)} 
-                  className="pl-10 h-12 bg-white/5 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 rounded-lg" 
+                  className="pl-10 h-12 bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 rounded-lg" 
                 />
               </div>
-              {errors.email && <span className="text-xs text-red-400">{errors.email}</span>}
+              {errors.email && <span className="text-xs text-red-500">{errors.email}</span>}
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="phone" className="text-sm font-medium text-slate-300">
+              <Label htmlFor="phone" className="text-sm font-medium text-slate-700">
                 Telefone
               </Label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input 
                   id="phone" 
                   placeholder="(99) 99999-9999" 
                   value={phone} 
                   onChange={handlePhoneChange} 
-                  className="pl-10 h-12 bg-white/5 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 rounded-lg" 
+                  className="pl-10 h-12 bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400 focus-visible:ring-emerald-500 focus-visible:border-emerald-500 rounded-lg" 
                 />
               </div>
-              {errors.phone && <span className="text-xs text-red-400">{errors.phone}</span>}
+              {errors.phone && <span className="text-xs text-red-500">{errors.phone}</span>}
             </div>
 
             <Button 
@@ -212,8 +212,8 @@ const LeadCaptureDialog: React.FC<LeadCaptureDialogProps> = ({
             </Button>
 
             <div className="flex items-center justify-center gap-2 pt-2">
-              <Lock className="w-3.5 h-3.5 text-slate-500" />
-              <p className="text-xs text-slate-500">
+              <Lock className="w-3.5 h-3.5 text-slate-400" />
+              <p className="text-xs text-slate-400">
                 Seus dados estão protegidos
               </p>
             </div>
