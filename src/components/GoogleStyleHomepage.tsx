@@ -63,31 +63,29 @@ const GoogleStyleHomepage: React.FC<GoogleStyleHomepageProps> = ({
         Digite seu serviço e sua cidade. Em 10 segundos, revelamos a demanda real que você não está aproveitando.
       </p>
       
-      {/* Single Search Bar */}
+      {/* Search Bar */}
       <div className="w-full max-w-2xl z-10">
-        <form onSubmit={handleSubmit}>
-          <div className="bg-white rounded-full shadow-2xl flex items-stretch overflow-hidden">
-            {/* Search Input */}
-            <div className="flex-1 flex items-center px-5 py-4">
-              <Search className="text-gray-400 mr-3 flex-shrink-0" size={20} />
-              <input
-                type="text"
-                placeholder="Ex: Advogado em Curitiba"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-base"
-              />
-            </div>
-            
-            {/* Submit Button */}
-            <Button 
-              type="submit" 
-              disabled={isLoading}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-base px-8 py-6 md:py-4 rounded-none rounded-r-full transition-colors"
-            >
-              {isLoading ? 'Analisando...' : 'Analisar'}
-            </Button>
+        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
+          {/* Search Input */}
+          <div className="w-full bg-white rounded-full shadow-2xl flex items-center px-5 py-4">
+            <Search className="text-gray-400 mr-3 flex-shrink-0" size={20} />
+            <input
+              type="text"
+              placeholder="Ex: Advogado em Curitiba"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-400 text-base"
+            />
           </div>
+          
+          {/* Submit Button */}
+          <Button 
+            type="submit" 
+            disabled={isLoading}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-base px-10 py-3 rounded-full transition-colors shadow-lg"
+          >
+            {isLoading ? 'Analisando...' : 'Analisar'}
+          </Button>
         </form>
       </div>
       
